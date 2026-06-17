@@ -2,26 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* ── Charte Chopin — mode clair ── */
+    --background: 45 43% 96%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 144 33% 18%;
+    --primary-foreground: 45 43% 96%;
+    --secondary: 42 40% 94%;
+    --secondary-foreground: 144 33% 18%;
+    --muted: 42 40% 94%;
+    --muted-foreground: 0 0% 35%;
+    --accent: 39 40% 54%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 51% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 42 25% 85%;
+    --input: 42 25% 88%;
+    --ring: 39 40% 54%;
+    --radius: 0.5rem;
+
+    /* ── Statuts ── */
+    --status-pending-bg: 42 60% 92%;        --status-pending-text: 39 60% 30%;
+    --status-accepted-bg: 107 35% 92%;      --status-accepted-text: 107 35% 25%;
+    --status-refused-bg: 0 51% 94%;         --status-refused-text: 0 51% 35%;
+    --status-prep-bg: 210 50% 92%;          --status-prep-text: 210 50% 30%;
+    --status-shipped-bg: 180 40% 92%;       --status-shipped-text: 180 40% 25%;
+    --status-delivered-bg: 144 33% 92%;     --status-delivered-text: 144 33% 20%;
+    --status-overdue-bg: 0 51% 90%;         --status-overdue-text: 0 51% 35%;
   }
-}
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
+  .dark {
+    /* ── Charte Chopin — mode sombre ── */
+    --background: 144 20% 8%;
+    --foreground: 45 30% 92%;
+    --card: 144 20% 11%;
+    --card-foreground: 45 30% 92%;
+    --popover: 144 20% 11%;
+    --popover-foreground: 45 30% 92%;
+    --primary: 39 40% 54%;
+    --primary-foreground: 144 33% 12%;
+    --secondary: 144 15% 18%;
+    --secondary-foreground: 45 30% 92%;
+    --muted: 144 15% 18%;
+    --muted-foreground: 45 15% 65%;
+    --accent: 144 33% 25%;
+    --accent-foreground: 45 30% 92%;
+    --destructive: 0 51% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 144 15% 22%;
+    --input: 144 15% 22%;
+    --ring: 39 40% 54%;
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+    --status-pending-bg: 42 30% 20%;        --status-pending-text: 42 60% 75%;
+    --status-accepted-bg: 107 25% 18%;      --status-accepted-text: 107 35% 75%;
+    --status-refused-bg: 0 30% 22%;         --status-refused-text: 0 60% 78%;
+    --status-prep-bg: 210 30% 20%;          --status-prep-text: 210 60% 78%;
+    --status-shipped-bg: 180 25% 18%;       --status-shipped-text: 180 40% 75%;
+    --status-delivered-bg: 144 25% 18%;     --status-delivered-text: 144 40% 75%;
+    --status-overdue-bg: 0 30% 22%;         --status-overdue-text: 0 60% 78%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
   }
 }
