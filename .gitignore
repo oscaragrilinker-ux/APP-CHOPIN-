@@ -1,7 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+# Non ancré : site-vitrine/ embarque son propre node_modules (354 Mo),
+# que la forme « /node_modules » ne couvrait pas.
+node_modules/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -34,3 +36,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.env.local
+.next/
+
+# Site vitrine : application Next distincte imbriquée dans ce dépôt, déjà
+# exclue du tsconfig. Ignorée en attendant d'être sortie dans son propre dépôt.
+/site-vitrine/
+
+# État transitoire du CLI Supabase (ref du projet, versions, URL du pooler)
+supabase/.temp/
