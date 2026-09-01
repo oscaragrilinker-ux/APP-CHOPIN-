@@ -13,8 +13,11 @@ Gestion des offres commerciales, commandes, préparation palette, facturation et
 - **Toasts** : sonner
 - **Emails** : Resend + React Email, templates dans `/emails/`, wrapper `lib/email/send.ts`
 - **PDF** : @react-pdf/renderer côté serveur
-  - Fiches palette → stream direct (route GET `/api/pdf/pallet-sheet`)
-  - Factures → upload Supabase Storage bucket `invoices` + URL signée
+  - Bons de commande → stream direct (`/api/bon-commande/[orderId]`), version
+    sans prix pour l'atelier
+  - Fiches palette → stream direct (`/api/pdf/pallet-sheet?id=`), QR code du
+    numéro de lot généré par `qrcode`
+  - Factures → upload Supabase Storage bucket `invoices` + URL signée *(à faire)*
 - **Tests E2E** : Playwright
 - **Déploiement** : Coolify
 
@@ -23,31 +26,64 @@ Gestion des offres commerciales, commandes, préparation palette, facturation et
 | Rôle | Description |
 |------|-------------|
 | `admin` | Accès complet à toutes les fonctions métier |
-| `secretaire` | Accès étendu sauf actions destructives |
-| `conditionnement` | Commandes uniquement (sans prix), saisie lot, fiche palette |
+| `secretaire` | Commandes, transport, facturation, relances. Lecture seule sur les offres, ne pilote pas la préparation |
+| `responsable_conditionnement` | Chef d'atelier : tout ce que fait un opérateur, plus l'ordre de passage des commandes. Sans les prix |
+| `conditionnement` | Préparation et fiches palette (sans les prix), saisie du lot |
 | `client_pro` | Ses propres offres/commandes/factures uniquement |
 | `super_admin` | DEV only — mêmes droits qu'admin + `activity_log` + impersonation. **Masqué côté UI.** |
 
 La matrice complète est dans `docs/permissions.md`.
+
+### Droits ajustés par utilisateur
+
+Le rôle donne un jeu de droits par défaut ; un admin peut ensuite l'affiner
+personne par personne au moment de l'invitation. Les écarts sont stockés dans
+`profiles.permission_overrides` (jsonb) et appliqués par
+`hasPermission(role, permission, overrides)`.
+
+La RLS reste le plafond : un ajustement affine à l'intérieur du rôle, il ne le
+contourne pas. Un compte conditionnement ne verra jamais les prix, même si la
+case est cochée — ses données transitent par la vue `orders_for_conditionnement`
+qui les exclut à la source.
+
+### Entrée dans l'application
+
+Personne ne s'inscrit seul. Un admin invite un client (rattaché à une
+entreprise créée au préalable) ou un salarié ; le destinataire reçoit un lien
+signé à usage unique, valable 14 jours, qui crée son compte ou le rattache s'il
+en a déjà un. Voir `lib/actions/invitations.ts` et `app/(auth)/invitation/`.
 
 ## Conventions
 
 ### Structure de dossiers
 
 ```
-app/(auth)/         → pages login/callback
+app/(auth)/         → login + page publique d'invitation /invitation/[token]
 app/(app)/          → pages protégées (shell sidebar)
-app/api/            → routes API (pdf, cron, auth)
+app/api/            → routes API (pdf, bon-commande, cron, auth)
 components/ui/      → composants shadcn/ui (ne pas modifier manuellement)
-components/shared/  → composants métier partagés
+components/<module>/→ composants métier, un dossier par module
+                      (offres, commandes, clients, catalogue, facturation,
+                       relances, archives, atelier, transporteurs,
+                       invitations, layout)
+context/            → AuthContext (rôle et profil courants côté client)
+hooks/              → hooks React (useNotifications : temps réel Supabase)
 emails/             → templates React Email
-lib/supabase/       → clients Supabase (client.ts, server.ts)
-lib/email/          → wrapper Resend
-lib/pdf/            → composants @react-pdf/renderer
-lib/permissions.ts  → matrice de permissions as code
+lib/actions/        → server actions, une par domaine métier
+                      (offers, orders, invoices, catalogue, clients,
+                       invitations, carriers, logistics)
+lib/supabase/       → clients Supabase (client.ts, server.ts, service.ts)
+lib/email/          → wrapper Resend + composeurs par événement
+lib/pdf/            → composants @react-pdf/renderer (bon-commande, pallet-sheet)
+lib/utils/          → utilitaires métier (price.ts : calculs et formats)
+lib/permissions.ts  → matrice de permissions as code (source de vérité applicative)
 types/              → types TypeScript (database.ts auto-généré, index.ts métier)
-supabase/           → migrations SQL et seed
+supabase/           → migrations SQL, seed et tests RLS
 ```
+
+Les pages métier vivent sous `app/(app)/` : `dashboard`, `offres`, `commandes`,
+`atelier`, `catalogue`, `clients`, `transporteurs`, `facturation`, `relances`,
+`archives`, `utilisateurs`, `parametres`, `compte`.
 
 ### Règles de code
 
@@ -55,10 +91,14 @@ supabase/           → migrations SQL et seed
 - CSS via Tailwind + CSS vars uniquement (jamais de hex en dur dans les composants)
 - Permissions vérifiées **côté serveur** (RLS Supabase) ET via `lib/permissions.ts`
 - Actions destructives toujours derrière un `<ConfirmDialog>`
-- Statuts affichés via `<StatusBadge>` avec couleurs des CSS vars `--status-*`
+  (`components/ui/confirm-dialog.tsx`), jamais `window.confirm`
+- Statuts affichés via les badges dédiés `<OfferStatusBadge>`,
+  `<OrderStatusBadge>`, `<InvoiceStatusBadge>`
 - PDF uniquement côté serveur (jamais côté client)
 - Emails uniquement via `lib/email/send.ts`
 - Pas de `console.log` en production — utiliser des logs structurés
+- Le client `service_role` (`lib/supabase/service.ts`) impose `cache: 'no-store'` :
+  Next.js instrumente `fetch()` et mettrait en cache les réponses PostgREST
 
 ### Palette couleurs Chopin
 
@@ -76,9 +116,33 @@ npm run dev              # Dev server (PWA désactivé)
 npm run build            # Build production
 npm run lint             # ESLint
 npm run format           # Prettier
-npm run types:supabase   # Regénérer types Supabase
+npm run types:supabase   # Regénérer types Supabase (projet distant, auth requise)
 npm run test:e2e         # Tests Playwright
 ```
+
+## Pièges connus
+
+**Ne pas lancer `npm run build` pendant que `npm run dev` tourne.** Les deux
+partagent `.next` ; le serveur de développement se retrouve cassé avec des pages
+introuvables. Arrêter le dev, compiler, relancer.
+
+**Ne pas utiliser `supabase db push`.** L'historique distant a été écrit via MCP :
+les versions distantes des migrations 13 à 18 sont des horodatages
+(`20260618103834`…) qui ne correspondent pas aux noms de fichiers locaux
+(`00013_…`). `db push` les croirait non appliquées et les rejouerait en
+production. Appliquer chaque migration explicitement, une par une.
+
+**Une valeur d'enum fraîchement ajoutée ne peut pas servir dans la même
+transaction.** C'est pourquoi `00019` (ajout de `responsable_conditionnement`)
+est séparée de `00020` qui l'utilise. Dans les policies, comparer via
+`get_user_role()::text` pour éviter le problème.
+
+**`CREATE OR REPLACE VIEW` n'ajoute des colonnes qu'en fin de liste.** Pour
+insérer une colonne au milieu, il faut `DROP VIEW` puis `CREATE VIEW` — et
+rétablir le `GRANT SELECT` que le DROP efface.
+
+**`site-vitrine/` est une application Next distincte** imbriquée dans ce dépôt.
+Elle est exclue du `tsconfig` et ignorée par git, en attendant d'être sortie.
 
 ## Variables d'environnement
 
