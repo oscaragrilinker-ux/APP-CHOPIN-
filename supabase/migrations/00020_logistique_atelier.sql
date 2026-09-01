@@ -144,7 +144,13 @@ GRANT EXECUTE ON FUNCTION public.generate_bl_number() TO authenticated, service_
 -- Il lit les mêmes données que l'atelier (jamais les prix) et pilote l'ordre
 -- de passage. La vue reste la seule porte d'entrée sur les commandes.
 -- ─────────────────────────────────────────────────────────────────────────────
-CREATE OR REPLACE VIEW public.orders_for_conditionnement AS
+-- DROP puis CREATE, et non CREATE OR REPLACE : les colonnes de logistique
+-- s'insèrent au milieu de la liste existante, or REPLACE n'autorise que l'ajout
+-- de colonnes en fin. Aucun objet ne dépend de cette vue, seule l'application
+-- l'interroge.
+DROP VIEW IF EXISTS public.orders_for_conditionnement;
+
+CREATE VIEW public.orders_for_conditionnement AS
 SELECT
   o.id,
   o.company_id,
@@ -175,6 +181,12 @@ JOIN public.companies c ON c.id = o.company_id
 LEFT JOIN public.carriers tr ON tr.id = o.carrier_id
 LEFT JOIN public.formats  f  ON f.id = o.format_id
 WHERE public.get_user_role()::text IN ('conditionnement', 'responsable_conditionnement');
+
+-- Le DROP a effacé les droits de l'ancienne vue : on les remet.
+-- La vue tourne avec les droits de son propriétaire et filtre elle-même par
+-- rôle ; c'est ce qui permet à l'atelier de lire des commandes sans avoir la
+-- moindre policy SELECT sur public.orders.
+GRANT SELECT ON public.orders_for_conditionnement TO authenticated, service_role;
 
 -- Lecture des fiches palette
 DROP POLICY IF EXISTS "pallet_sheets: conditionnement voit tout" ON public.pallet_sheets;
