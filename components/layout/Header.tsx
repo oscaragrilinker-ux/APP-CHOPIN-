@@ -11,6 +11,7 @@ import {
 import { Sidebar } from './Sidebar'
 import { NotificationBell } from './NotificationBell'
 import { UserMenu } from './UserMenu'
+import { BRAND } from '@/lib/brand'
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Tableau de bord',
@@ -32,7 +33,7 @@ function resolveTitle(pathname: string): string {
   for (const [prefix, title] of Object.entries(PAGE_TITLES)) {
     if (pathname.startsWith(prefix + '/')) return title
   }
-  return 'Chopin Conditionnement'
+  return BRAND.name
 }
 
 export function Header() {

@@ -2,6 +2,7 @@ import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import type { OfferRound, PriceBasis } from '@/types'
 import { computeTotal, formatEuro, priceBasisUnit } from '@/lib/utils/price'
+import { BRAND } from '@/lib/brand'
 
 type Props = {
   rounds: OfferRound[]
@@ -25,7 +26,7 @@ export function NegotiationThread({ rounds, priceBasis, quantity, weightKg, comp
       {rounds.map(round => {
         const isAdminRound = round.author_role === 'admin'
         const isRight = isAdminRound
-        const label = isAdminRound ? 'Chopin Conditionnement' : companyName
+        const label = isAdminRound ? BRAND.name : companyName
         const total = computeTotal({ priceBasis, unitPrice: round.unit_price, quantity, weightKg })
 
         return (

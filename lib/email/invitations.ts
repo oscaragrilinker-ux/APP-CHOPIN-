@@ -1,6 +1,7 @@
 import { sendEmail } from './send'
 import { InvitationEmail } from '@/emails/InvitationEmail'
 import type { Role } from '@/lib/permissions'
+import { BRAND } from '@/lib/brand'
 
 const ROLE_INTRO: Record<Role, string> = {
   admin:           'accéder à la gestion complète de l\'exploitation',
@@ -23,8 +24,8 @@ export async function sendInvitationEmail(params: {
   return sendEmail({
     to: params.to,
     subject: isClient
-      ? 'Votre accès à l\'espace professionnel Chopin Conditionnement'
-      : 'Votre accès à l\'application Chopin Conditionnement',
+      ? `Votre accès à l'espace professionnel ${BRAND.name}`
+      : `Votre accès à l'application ${BRAND.name}`,
     react: InvitationEmail({
       firstName: params.firstName,
       link: params.link,

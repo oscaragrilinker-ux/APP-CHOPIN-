@@ -25,6 +25,7 @@
     "@radix-ui/react-tabs": "^1.1.15",
     "@radix-ui/react-tooltip": "^1.2.10",
     "@react-email/components": "^0.0.22",
+    "@react-email/render": "^0.0.17",
     "@react-pdf/renderer": "^3.4.5",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.49.4",
@@ -44,7 +45,6 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.79.0",
     "recharts": "^2.13.3",
-    "resend": "^3.5.0",
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.5.5",
     "zod": "^3.25.76"

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { OfferWizard } from '@/components/offres/OfferWizard'
+import { BRAND } from '@/lib/brand'
 
 export const metadata = { title: 'Nouvelle offre — Chopin' }
 
@@ -99,7 +100,7 @@ export default async function NouvelleOffrePage({
         </div>
         <div className="rounded-xl border border-border/60 bg-secondary/30 p-8 text-center">
           <p className="text-sm text-muted-foreground">
-            Aucun contenant disponible pour cette variété. Contactez Chopin Conditionnement.
+            Aucun contenant disponible pour cette variété. Contactez {BRAND.name}.
           </p>
         </div>
       </div>
@@ -115,7 +116,7 @@ export default async function NouvelleOffrePage({
         <div>
           <h1 className="font-serif text-3xl text-foreground">Nouvelle offre</h1>
           <p className="text-sm text-muted-foreground mt-0.5 uppercase tracking-[0.1em]">
-            Proposition d&apos;achat · Chopin Conditionnement
+            Proposition d&apos;achat · {BRAND.name}
           </p>
         </div>
       </div>

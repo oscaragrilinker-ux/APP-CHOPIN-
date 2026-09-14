@@ -1,5 +1,6 @@
 import React from 'react'
 import { Document, Page, StyleSheet, Text, View, Image } from '@react-pdf/renderer'
+import { BRAND } from '@/lib/brand'
 
 export type PalletSheetPdfProps = {
   blNumber: string | null
@@ -222,7 +223,7 @@ export function PalletSheetPdf(props: PalletSheetPdfProps) {
         </View>
 
         <View style={s.footer} fixed>
-          <Text style={s.footerText}>SCEA Chopin Conditionnement</Text>
+          <Text style={s.footerText}>{BRAND.legalName}</Text>
           <Text style={s.footerText}>
             Lot {lotNumber}{blNumber ? ` · ${blNumber}` : ''}
           </Text>

@@ -3,6 +3,7 @@ import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import type { PriceBasis } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 export type BcPdfProps = {
   bcNumber: number
@@ -334,7 +335,7 @@ export function BonDeCommandePdf({
         {/* ── Pied de page ── */}
         <View style={s.footer} fixed>
           <Text style={s.footerText}>
-            Chopin Conditionnement · Document confidentiel
+            {BRAND.name} · Document confidentiel
           </Text>
           <Text style={s.footerText}>
             Généré le {format(new Date(), 'd MMMM yyyy', { locale: fr })}

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { acceptInvitation, type InvitationPreview } from '@/lib/actions/invitations'
+import { BRAND } from '@/lib/brand'
 
 const ROLE_LABELS: Record<string, string> = {
   admin: 'Administrateur',
@@ -71,7 +72,7 @@ export function AcceptInvitationForm({
       const supabase = createClient()
       const { error } = await supabase.auth.signInWithPassword({ email: res.email, password })
       if (!error) {
-        toast.success('Bienvenue chez Chopin Conditionnement.')
+        toast.success(`Bienvenue chez ${BRAND.name}.`)
         router.push('/')
         router.refresh()
         return

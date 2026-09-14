@@ -8,6 +8,7 @@ import { FormatRow } from './FormatRow'
 import { FormatDialog } from './FormatDialog'
 import { VarietyVitrineCard } from './VarietyVitrineCard'
 import type { ProductWithTree, FormatFull, Role } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 type Props = {
   products: ProductWithTree[]
@@ -139,7 +140,7 @@ export function CatalogueShell({ products, allFormats, role }: Props) {
           Aucune variété disponible
         </p>
         <p className="text-sm text-muted-foreground/60 max-w-xs mx-auto">
-          Chopin Conditionnement n&apos;a pas encore mis de variétés en service.
+          {BRAND.name} n&apos;a pas encore mis de variétés en service.
           Revenez prochainement.
         </p>
       </div>

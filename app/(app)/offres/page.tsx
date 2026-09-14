@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { OfferStatusBadge } from '@/components/offres/OfferStatusBadge'
 import { formatEuro, priceBasisUnit } from '@/lib/utils/price'
 import type { Role, OfferStatus, PriceBasis } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 export const metadata = { title: 'Négociations — Chopin' }
 
@@ -60,7 +61,7 @@ export default async function OffresPage() {
         <div>
           <h1 className="font-serif text-3xl text-foreground">Négociations</h1>
           <p className="text-sm text-muted-foreground mt-1 uppercase tracking-[0.1em]">
-            {isAdmin ? 'Propositions d\'achat clients · Gestion' : 'Vos propositions d\'achat · Chopin Conditionnement'}
+            {isAdmin ? 'Propositions d\'achat clients · Gestion' : `Vos propositions d'achat · ${BRAND.name}`}
           </p>
         </div>
         {role === 'client_pro' && (

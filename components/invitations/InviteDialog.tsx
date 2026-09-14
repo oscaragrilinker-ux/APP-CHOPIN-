@@ -141,7 +141,7 @@ export function InviteDialog({ company, companies, triggerLabel }: Props) {
               </p>
               {!emailSent && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  L&apos;envoi automatique s&apos;activera dès que la clé Resend sera renseignée.
+                  L&apos;envoi automatique s&apos;activera dès que la clé Brevo sera renseignée.
                 </p>
               )}
             </div>

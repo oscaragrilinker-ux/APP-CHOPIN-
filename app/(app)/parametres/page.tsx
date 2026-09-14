@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { BookOpen, Users, Settings, FileText } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { Role } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 export const metadata = { title: 'Paramètres — Chopin' }
 
@@ -36,7 +37,7 @@ export default async function ParametresPage() {
       <div>
         <h1 className="font-serif text-3xl text-foreground">Paramètres</h1>
         <p className="text-sm text-muted-foreground mt-1 uppercase tracking-[0.1em]">
-          Configuration de l&apos;application · SCEA Chopin Conditionnement
+          Configuration de l&apos;application · {BRAND.legalName}
         </p>
       </div>
 
@@ -44,7 +45,7 @@ export default async function ParametresPage() {
       <div className="rounded-2xl border border-border/60 bg-card divide-y divide-border/50">
         <div className="px-5 py-4">
           <p className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">Entreprise</p>
-          <p className="text-sm font-medium text-foreground mt-0.5">SCEA Chopin Conditionnement</p>
+          <p className="text-sm font-medium text-foreground mt-0.5">{BRAND.legalName}</p>
         </div>
         <div className="px-5 py-4">
           <p className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">Préfixe factures</p>

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { respondToOffer, cancelOffer } from '@/lib/actions/offers'
 import { priceBasisUnit, formatEuro } from '@/lib/utils/price'
 import type { OfferStatus, Role, PriceBasis } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 type Props = {
   offerId: string
@@ -66,7 +67,7 @@ export function RespondPanel({
     return (
       <div className="space-y-3">
         <div className="rounded-xl border border-border/60 bg-secondary/30 px-4 py-3 text-sm text-muted-foreground text-center">
-          En attente de la réponse de Chopin Conditionnement…
+          En attente de la réponse de {BRAND.name}…
         </div>
         <Button
           variant="ghost"

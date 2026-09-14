@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { OrderStatusBadge } from '@/components/commandes/OrderStatusBadge'
 import { formatEuro, formatTonnage } from '@/lib/utils/price'
 import type { Role, OrderStatus } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 export const metadata = { title: 'Commandes — Chopin' }
 
@@ -71,7 +72,7 @@ export default async function CommandesPage() {
     ? 'Préparation palette · Sans informations tarifaires'
     : isAdmin
     ? 'Suivi des commandes · Gestion'
-    : 'Suivi de vos commandes · Chopin Conditionnement'
+    : `Suivi de vos commandes · ${BRAND.name}`
 
   return (
     <div className="space-y-6">

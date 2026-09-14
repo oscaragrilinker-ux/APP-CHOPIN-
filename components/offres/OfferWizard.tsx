@@ -17,6 +17,7 @@ import {
   priceBasisUnit,
 } from '@/lib/utils/price'
 import type { PriceBasis, VarietyWithFormats, ProductWithTree } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 type Format = NonNullable<VarietyWithFormats['variety_formats'][number]['format']>
 
@@ -75,7 +76,7 @@ export function OfferWizard({ product, variety, formats }: Props) {
       if ('error' in res) {
         toast.error(res.error)
       } else {
-        toast.success('Offre envoyée ! Chopin Conditionnement reviendra vers vous très vite.')
+        toast.success(`Offre envoyée ! ${BRAND.name} reviendra vers vous très vite.`)
         router.push(`/offres/${res.offerId}`)
       }
     })
@@ -129,7 +130,7 @@ export function OfferWizard({ product, variety, formats }: Props) {
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
-            Vous allez soumettre une proposition de prix pour cette variété. Chopin Conditionnement
+            Vous allez soumettre une proposition de prix pour cette variété. {BRAND.name}
             vous répondra sous 48 h ouvrées.
           </p>
         </div>
@@ -300,7 +301,7 @@ export function OfferWizard({ product, variety, formats }: Props) {
 
           <div className="space-y-2">
             <Label htmlFor="msg" className="text-xs uppercase tracking-[0.08em]">
-              Message à Chopin Conditionnement
+              Message à {BRAND.name}
             </Label>
             <Textarea
               id="msg"

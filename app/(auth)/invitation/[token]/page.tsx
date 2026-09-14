@@ -2,8 +2,9 @@ import Link from 'next/link'
 import { AlertCircle } from 'lucide-react'
 import { getInvitation } from '@/lib/actions/invitations'
 import { AcceptInvitationForm } from './AcceptInvitationForm'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Invitation — Chopin Conditionnement' }
+export const metadata = { title: `Invitation — ${BRAND.name}` }
 export const dynamic = 'force-dynamic'
 
 export default async function InvitationPage({ params }: { params: { token: string } }) {
@@ -13,9 +14,11 @@ export default async function InvitationPage({ params }: { params: { token: stri
     <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="font-serif text-[2.75rem] leading-none text-primary">Chopin</h1>
+          <h1 className="font-serif text-[2.75rem] leading-none text-primary">
+            {BRAND.nameTop}
+          </h1>
           <p className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase mt-2 font-sans">
-            Conditionnement
+            {BRAND.nameBottom}
           </p>
         </div>
 
@@ -33,7 +36,7 @@ export default async function InvitationPage({ params }: { params: { token: stri
         )}
 
         <p className="text-center text-xs text-muted-foreground/70 mt-5">
-          Accès réservé aux professionnels — SCEA Chopin Conditionnement
+          Accès réservé aux professionnels — {BRAND.legalName}
         </p>
       </div>
     </div>

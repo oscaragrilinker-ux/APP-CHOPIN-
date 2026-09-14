@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import type { PriceBasis, Role, OfferStatus } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 // ── Schéma de validation ───────────────────────────────────────────────────
 
@@ -61,7 +62,7 @@ export async function createOffer(input: CreateOfferInput): Promise<ActionResult
     .limit(1)
 
   if (cuError || !clientUsers?.length) {
-    return { error: 'Aucune entreprise associée à votre compte. Contactez Chopin Conditionnement.' }
+    return { error: `Aucune entreprise associée à votre compte. Contactez ${BRAND.name}.` }
   }
   const company_id = clientUsers[0].company_id
 
@@ -218,10 +219,10 @@ export async function respondToOffer(input: RespondInput): Promise<ActionResult>
   // (counter_proposed = Chopin a répondu). Sur une offre pending, sa seule
   // sortie reste l'annulation via cancelOffer.
   if (offer.status === 'pending' && isClient) {
-    return { error: 'En attente de la réponse de Chopin Conditionnement.' }
+    return { error: `En attente de la réponse de ${BRAND.name}.` }
   }
   if (action === 'refuse' && isClient) {
-    return { error: 'Le refus est une action réservée à Chopin Conditionnement.' }
+    return { error: `Le refus est une action réservée à ${BRAND.name}.` }
   }
 
   // Chopin garde la main sur une offre qu'il a lui-même contre-proposée :
@@ -270,7 +271,7 @@ export async function respondToOffer(input: RespondInput): Promise<ActionResult>
         author_id: user.id,
         unit_price: roundPrice,
         message: acceptAtClientPrice !== null
-          ? (message ?? 'Chopin Conditionnement se range au prix proposé par le client.')
+          ? (message ?? `${BRAND.name} se range au prix proposé par le client.`)
           : (message ?? null),
       })
 
@@ -298,7 +299,7 @@ export async function respondToOffer(input: RespondInput): Promise<ActionResult>
         await notifyCompany({
           companyId: offer.company_id,
           title: 'Contre-proposition reçue',
-          body: 'Chopin Conditionnement a répondu à votre offre.',
+          body: `${BRAND.name} a répondu à votre offre.`,
           link,
         })
       } else {
@@ -325,7 +326,7 @@ export async function respondToOffer(input: RespondInput): Promise<ActionResult>
         companyId: offer.company_id,
         title: 'Offre acceptée !',
         body: acceptAtClientPrice !== null
-          ? 'Chopin Conditionnement s\'est rangé à votre prix. Une commande a été créée.'
+          ? `${BRAND.name} s'est rangé à votre prix. Une commande a été créée.`
           : 'Votre offre a été acceptée. Une commande a été créée.',
         link: `/offres/${offerId}`,
       })
@@ -352,8 +353,8 @@ export async function respondToOffer(input: RespondInput): Promise<ActionResult>
         companyId: offer.company_id,
         title: 'Offre refusée',
         body: message
-          ? `Chopin Conditionnement a refusé votre offre : ${message}`
-          : 'Chopin Conditionnement a refusé votre offre.',
+          ? `${BRAND.name} a refusé votre offre : ${message}`
+          : `${BRAND.name} a refusé votre offre.`,
         link: `/offres/${offerId}`,
       })
     } else {
@@ -427,7 +428,7 @@ export async function cancelOffer({ offerId }: { offerId: string }): Promise<Act
     await notifyCompany({
       companyId: offer.company_id,
       title: 'Négociation clôturée',
-      body: 'Chopin Conditionnement a clôturé cette négociation.',
+      body: `${BRAND.name} a clôturé cette négociation.`,
       link: `/offres/${offerId}`,
     })
   }

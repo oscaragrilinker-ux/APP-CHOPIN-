@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
+import { BRAND } from '@/lib/brand'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -42,9 +43,11 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="font-serif text-[2.75rem] leading-none text-primary">Chopin</h1>
+          <h1 className="font-serif text-[2.75rem] leading-none text-primary">
+            {BRAND.nameTop}
+          </h1>
           <p className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase mt-2 font-sans">
-            Conditionnement
+            {BRAND.nameBottom}
           </p>
         </div>
 
@@ -97,7 +100,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground/70 mt-5">
-          Accès réservé aux professionnels — SCEA Chopin Conditionnement
+          Accès réservé aux professionnels — {BRAND.legalName}
         </p>
       </div>
     </div>

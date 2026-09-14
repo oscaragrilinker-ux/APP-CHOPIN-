@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { updateTransport } from '@/lib/actions/logistics'
 import type { Carrier } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 type Props = {
   orderId: string
@@ -75,7 +76,7 @@ export function TransportPanel({ orderId, carriers, current, shipment, canEdit }
       lines.push(`Remarques : ${notes}`)
     }
     lines.push('')
-    lines.push('SCEA Chopin Conditionnement')
+    lines.push(BRAND.legalName)
     return lines.join('\n')
   }, [shipment, pickup, dropoff, date, time, notes])
 

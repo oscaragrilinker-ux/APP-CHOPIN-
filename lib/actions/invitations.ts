@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { diffFromRole, type Permission, type PermissionOverrides, type Role } from '@/lib/permissions'
+import { BRAND } from '@/lib/brand'
 
 type ActionResult<T = object> = { error: string } | ({ success: true } & T)
 
@@ -144,7 +145,7 @@ async function userIdForEmail(email: string): Promise<string | null> {
   return null
 }
 
-// ── Envoi de l'e-mail (silencieux si Resend n'est pas configuré) ─────────────
+// ── Envoi de l'e-mail (silencieux si Brevo n'est pas configuré) ──────────────
 
 async function sendInvitationEmail(params: {
   to: string
@@ -153,7 +154,7 @@ async function sendInvitationEmail(params: {
   firstName: string | null
   message: string | null
 }): Promise<boolean> {
-  if (!process.env.RESEND_API_KEY) return false
+  if (!process.env.BREVO_API_KEY) return false
 
   try {
     const { sendInvitationEmail: send } = await import('@/lib/email/invitations')
@@ -210,10 +211,10 @@ export async function getInvitation(
     .maybeSingle()
 
   if (!invitation) return { error: 'Ce lien d\'invitation est introuvable.' }
-  if (invitation.revoked_at) return { error: 'Cette invitation a été annulée par Chopin Conditionnement.' }
+  if (invitation.revoked_at) return { error: `Cette invitation a été annulée par ${BRAND.name}.` }
   if (invitation.accepted_at) return { error: 'Cette invitation a déjà été utilisée. Connectez-vous avec votre compte.' }
   if (new Date(invitation.expires_at) < new Date()) {
-    return { error: 'Ce lien d\'invitation a expiré. Demandez-en un nouveau à Chopin Conditionnement.' }
+    return { error: `Ce lien d'invitation a expiré. Demandez-en un nouveau à ${BRAND.name}.` }
   }
 
   let companyName: string | null = null

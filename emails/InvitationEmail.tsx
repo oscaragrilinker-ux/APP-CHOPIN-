@@ -1,6 +1,7 @@
 import {
   Body, Container, Head, Heading, Hr, Html, Link, Preview, Section, Text,
 } from '@react-email/components'
+import { BRAND } from '@/lib/brand'
 
 type Props = {
   firstName: string | null
@@ -24,7 +25,7 @@ export function InvitationEmail({ firstName, link, intro, message }: Props) {
   return (
     <Html lang="fr">
       <Head />
-      <Preview>Votre accès à l&apos;espace Chopin Conditionnement</Preview>
+      <Preview>Votre accès à l&apos;espace {BRAND.name}</Preview>
       <Body style={{ backgroundColor: COLORS.background, margin: 0, padding: '32px 0', fontFamily: 'Helvetica, Arial, sans-serif' }}>
         <Container style={{ maxWidth: '520px', margin: '0 auto', backgroundColor: COLORS.card, borderRadius: '12px', border: `1px solid ${COLORS.border}`, padding: '32px' }}>
           <Section style={{ textAlign: 'center', paddingBottom: '8px' }}>
@@ -43,7 +44,7 @@ export function InvitationEmail({ firstName, link, intro, message }: Props) {
           </Text>
 
           <Text style={{ color: '#1A1A1A', fontSize: '15px', lineHeight: '24px' }}>
-            SCEA Chopin Conditionnement vous invite à {intro}.
+            {BRAND.legalName} vous invite à {intro}.
           </Text>
 
           {message && (

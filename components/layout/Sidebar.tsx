@@ -20,6 +20,7 @@ import type { LucideIcon } from 'lucide-react'
 import { SidebarLink } from './SidebarLink'
 import { useAuth } from '@/context/AuthContext'
 import type { Role } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 type NavItem = {
   label: string
@@ -171,7 +172,7 @@ export function Sidebar() {
       {/* Pied de page */}
       <div className="shrink-0 px-4 py-3 border-t border-white/10">
         <p className="text-[9px] text-primary-foreground/25 text-center font-sans tracking-wide">
-          SCEA Chopin Conditionnement · v0.1
+          {BRAND.legalName} · v0.1
         </p>
       </div>
     </div>
