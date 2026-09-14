@@ -4,7 +4,7 @@ export const siteConfig = {
   baseline: "POMMES DE TERRE & OIGNONS",
   pillars: ["ULTRA LOCAL", "QUALITÉ SUPÉRIEURE", "CIRCUIT COURT"] as const,
   legalName: "SCEA Chopin",          // ← À CONFIRMER : raison sociale exacte pour les factures
-  domain: "lafermedeschopin.fr",
+  domain: "fermedeschopin.fr",
   address: {
     street: "11 rue de la Maladrerie",
     zip: "62124",
@@ -13,7 +13,7 @@ export const siteConfig = {
     country: "France",
   },
   contactPhone: "+33 3 00 00 00 00",    // ← À REMPLACER par le vrai numéro
-  contactEmail: "contact@lafermedeschopin.fr",
+  contactEmail: "contact@fermedeschopin.fr",
   formspreeId: "xxxxxxxx",              // ← À REMPLACER par l'ID Formspree réel (https://formspree.io)
   orderAppUrl: "/app",                  // ← URL de l'espace commande (app interne)
   mapsQuery: "11 rue de la Maladrerie, 62124 Beaumetz-lès-Cambrai",

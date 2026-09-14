@@ -37,7 +37,7 @@ npm run start      # Démarre en mode production
 | Constante | Valeur par défaut | À remplacer par |
 |-----------|-------------------|-----------------|
 | `contactPhone` | `+33 3 00 00 00 00` | Le vrai numéro de téléphone |
-| `contactEmail` | `contact@chopin-conditionnement.fr` | L'email de contact réel |
+| `contactEmail` | `contact@fermedeschopin.fr` | L'email de contact réel |
 | `formspreeId` | `xxxxxxxx` | Votre ID Formspree ([créer un compte](https://formspree.io)) |
 | `orderAppUrl` | `/app` | L'URL de l'espace commande (app interne ou domaine) |
 | `contactPhone` | — | Numéro cliquable dans le header/footer/contact |
