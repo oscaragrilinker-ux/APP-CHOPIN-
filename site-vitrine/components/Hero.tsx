@@ -53,11 +53,11 @@ export function Hero() {
     <section className="relative isolate flex min-h-[86svh] flex-col justify-end overflow-hidden bg-night">
       <div ref={plateRef} className="absolute inset-0 -z-10 will-change-transform">
         <Photo
-          src="/images/photos/hero.jpg"
+          src="/images/photos/hero-couchant.jpg"
           alt="Arrachage de pommes de terre au soleil couchant, Hauts-de-France"
           brief="L'arrachage au soleil couchant, arracheuse et tracteur en silhouette"
           className="size-full scale-[1.12]"
-          imgClassName="object-[center_26%] brightness-[0.78]"
+          imgClassName="brightness-[0.82]"
           priority
         />
       </div>

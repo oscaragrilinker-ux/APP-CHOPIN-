@@ -76,6 +76,8 @@ export function Footer() {
 
             <Link
               href={siteConfig.orderAppUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-7 inline-flex h-11 items-center border border-paper/30 px-6 text-[11px] font-semibold uppercase tracking-label text-paper transition-colors hover:border-paper"
             >
               Espace commande

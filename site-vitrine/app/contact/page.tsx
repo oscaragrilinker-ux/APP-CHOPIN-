@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { ExternalLink } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
 import { Reveal } from '@/components/Reveal'
 import { ContactForm } from '@/components/ContactForm'
@@ -100,9 +101,12 @@ export default function ContactPage() {
               </p>
               <Link
                 href={siteConfig.orderAppUrl}
-                className="mt-4 inline-flex h-11 items-center border border-ink/25 px-6 text-[11px] font-semibold uppercase tracking-label transition-colors hover:border-ink"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex h-11 items-center gap-2 border border-ink/25 px-6 text-[11px] font-semibold uppercase tracking-label transition-colors hover:border-ink"
               >
                 Espace commande
+                <ExternalLink size={11} aria-hidden />
               </Link>
             </Reveal>
           </div>

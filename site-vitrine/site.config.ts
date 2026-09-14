@@ -15,7 +15,10 @@ export const siteConfig = {
   contactPhone: "+33 3 00 00 00 00",    // ← À REMPLACER par le vrai numéro
   contactEmail: "contact@fermedeschopin.fr",
   formspreeId: "xxxxxxxx",              // ← À REMPLACER par l'ID Formspree réel (https://formspree.io)
-  orderAppUrl: "/app",                  // ← URL de l'espace commande (app interne)
+  // Espace commande : l'application métier, hébergée sur son propre
+  // sous-domaine. En local on la surcharge via NEXT_PUBLIC_APP_URL
+  // (voir .env.local) pour pointer sur le serveur de développement.
+  orderAppUrl: process.env.NEXT_PUBLIC_APP_URL || "https://espace.fermedeschopin.fr",
   mapsQuery: "11 rue de la Maladrerie, 62124 Beaumetz-lès-Cambrai",
 
   // Chiffres affichés en page d'accueil. ← À CONFIRMER avec l'exploitation.

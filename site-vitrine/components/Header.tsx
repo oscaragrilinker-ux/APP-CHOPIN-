@@ -94,6 +94,8 @@ export function Header() {
           <div className="flex items-center gap-3">
             <Link
               href={siteConfig.orderAppUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="hidden h-10 items-center gap-1.5 border border-paper/40 px-5 text-[10px] font-semibold uppercase tracking-label text-paper transition-colors hover:bg-field hover:border-field group-data-[pose=oui]:border-ink group-data-[pose=oui]:bg-ink sm:inline-flex"
             >
               Espace commande
@@ -142,6 +144,8 @@ export function Header() {
             <li>
               <Link
                 href={siteConfig.orderAppUrl}
+              target="_blank"
+              rel="noopener noreferrer"
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2 px-6 py-4 text-[11px] font-semibold uppercase tracking-label text-field hover:bg-bone/50"
               >
