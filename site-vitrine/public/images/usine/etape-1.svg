@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img">
+  <title>Étape 1 — </title>
+  <rect width="800" height="600" fill="#E8E1CF"/>
+  <rect x="0" y="0" width="800" height="3" fill="#B08D4F" opacity="0.4"/>
+  <rect x="0" y="597" width="800" height="3" fill="#B08D4F" opacity="0.4"/>
+  <text x="400" y="270" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#B08D4F" letter-spacing="4" opacity="0.8">PHOTO À FOURNIR</text>
+  <text x="400" y="310" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#1F3D2B" letter-spacing="1"></text>
+  <text x="400" y="345" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#1F3D2B" opacity="0.4">etape-1.jpg</text>
+</svg>

@@ -39,9 +39,12 @@ next-env.d.ts
 .env.local
 .next/
 
-# Site vitrine : application Next distincte imbriquée dans ce dépôt, déjà
-# exclue du tsconfig. Ignorée en attendant d'être sortie dans son propre dépôt.
-/site-vitrine/
+# Site vitrine : application Next distincte imbriquée dans ce dépôt, exclue du
+# tsconfig de l'app métier. Son code est versionné ; ses dépendances et son
+# cache de build le sont pas, déjà couverts par « node_modules/ » et « .next/ »
+# plus haut, qui ne sont pas ancrés à la racine.
+/site-vitrine/.next/
+/site-vitrine/out/
 
 # État transitoire du CLI Supabase (ref du projet, versions, URL du pooler)
 supabase/.temp/
