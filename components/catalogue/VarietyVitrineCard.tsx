@@ -30,10 +30,10 @@ export function VarietyVitrineCard({ product, variety, role }: Props) {
   }
 
   return (
-    <div className="flex flex-col rounded-2xl border border-border/70 bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+    <div className="flex flex-col rounded-lg border border-border/70 bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       {/* En-tête : image + identité */}
       <div className="flex items-start gap-3 p-5 pb-4">
-        <div className="shrink-0 w-14 h-14 rounded-xl overflow-hidden bg-primary/8 border border-border/40 flex items-center justify-center">
+        <div className="shrink-0 w-14 h-14 rounded-md overflow-hidden bg-primary/8 border border-border/40 flex items-center justify-center">
           {product.image_url && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

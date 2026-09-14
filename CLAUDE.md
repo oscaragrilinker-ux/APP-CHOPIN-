@@ -1,6 +1,6 @@
 # APP CHOPIN — CLAUDE.md
 
-Application métier privée pour **SCEA Chopin Conditionnement**.
+Application métier privée pour **La Ferme des Chopin** (marque ; raison sociale à confirmer, voir `lib/brand.ts`).
 Gestion des offres commerciales, commandes, préparation palette, facturation et relances clients professionnels.
 
 ## Stack technique
@@ -11,7 +11,7 @@ Gestion des offres commerciales, commandes, préparation palette, facturation et
 - **Formulaires** : react-hook-form + zod
 - **Tables** : @tanstack/react-table
 - **Toasts** : sonner
-- **Emails** : Resend + React Email, templates dans `/emails/`, wrapper `lib/email/send.ts`
+- **Emails et SMS** : Brevo (API REST, sans SDK) + React Email, templates dans `/emails/`, wrapper `lib/email/send.ts` — `sendEmail()` et `sendSms()`. Sans `BREVO_API_KEY`, rien ne part et l'invitation reste transmissible par son lien
 - **PDF** : @react-pdf/renderer côté serveur
   - Bons de commande → stream direct (`/api/bon-commande/[orderId]`), version
     sans prix pour l'atelier
@@ -48,6 +48,13 @@ qui les exclut à la source.
 
 ### Entrée dans l'application
 
+Le site public (`site-vitrine/`, port 3007) porte un formulaire « Demander un
+accès » : e-mail, entreprise, vœux de commande. Il écrit dans `access_requests`
+(migration 00021) avec la clé publique, dont le seul droit est l'insertion
+d'une demande vierge. Un admin la voit dans `/utilisateurs` et, d'un clic,
+crée l'entreprise et l'invitation ; le lien reste affiché tant que
+l'invitation n'est ni acceptée ni révoquée.
+
 Personne ne s'inscrit seul. Un admin invite un client (rattaché à une
 entreprise créée au préalable) ou un salarié ; le destinataire reçoit un lien
 signé à usage unique, valable 14 jours, qui crée son compte ou le rattache s'il
@@ -77,6 +84,8 @@ lib/email/          → wrapper Resend + composeurs par événement
 lib/pdf/            → composants @react-pdf/renderer (bon-commande, pallet-sheet)
 lib/utils/          → utilitaires métier (price.ts : calculs et formats)
 lib/permissions.ts  → matrice de permissions as code (source de vérité applicative)
+lib/brand.ts        → identité : marque affichée (`name`) ≠ raison sociale (`legalName`).
+                      Source unique du nom — ne jamais l'écrire en dur ailleurs
 types/              → types TypeScript (database.ts auto-généré, index.ts métier)
 supabase/           → migrations SQL, seed et tests RLS
 ```
@@ -141,8 +150,21 @@ est séparée de `00020` qui l'utilise. Dans les policies, comparer via
 insérer une colonne au milieu, il faut `DROP VIEW` puis `CREATE VIEW` — et
 rétablir le `GRANT SELECT` que le DROP efface.
 
-**`site-vitrine/` est une application Next distincte** imbriquée dans ce dépôt.
-Elle est exclue du `tsconfig` et ignorée par git, en attendant d'être sortie.
+**`site-vitrine/` est une application Next distincte** imbriquée dans ce dépôt,
+exclue du `tsconfig` de l'app métier. Son code est versionné ; seuls ses
+`node_modules/` et `.next/` sont ignorés. Elle partage la palette et les
+polices (Anton · Archivo · Caveat) et tourne sur le port 3007. Son
+`.env.local` porte `NEXT_PUBLIC_APP_URL` (lien « Espace commande ») et les
+deux clés publiques Supabase (dépôt des demandes d'accès).
+
+**Un seul serveur de dev par application.** Un `next dev` orphelin qui partage
+`.next` avec un second corrompt le cache et fige le serveur : avant de relancer,
+tuer *tous* les processus `next` de l'app, attendre que le port se libère,
+puis vider `.next`.
+
+**Le cache de Safari survit aux remplacements de fichiers.** Une image ou une
+feuille remplacée sous le même nom peut rester servie depuis le cache : changer
+le nom du fichier, ou tester en navigation privée.
 
 ## Variables d'environnement
 

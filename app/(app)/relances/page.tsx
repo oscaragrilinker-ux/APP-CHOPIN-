@@ -8,8 +8,9 @@ import { InvoiceStatusBadge } from '@/components/facturation/InvoiceStatusBadge'
 import { MarkOverdueButton } from '@/components/relances/MarkOverdueButton'
 import { formatEuro } from '@/lib/utils/price'
 import type { Role, InvoiceStatus } from '@/types'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Relances — Chopin' }
+export const metadata = { title: `Relances — ${BRAND.name}` }
 export const dynamic = 'force-dynamic'
 
 export default async function RelancesPage() {

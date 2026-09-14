@@ -10,8 +10,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans:  ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-cormorant)', 'Georgia', 'serif'],
+        sans:   ['var(--font-archivo)', 'system-ui', 'sans-serif'],
+        // « serif » reste le nom des classes de titre déjà posées partout ;
+        // c'est Anton qui les rend désormais.
+        serif:  ['var(--font-anton)', 'Impact', 'sans-serif'],
+        script: ['var(--font-caveat)', 'cursive'],
       },
       colors: {
         background:  'hsl(var(--background))',
@@ -26,6 +29,7 @@ export default {
         border:      'hsl(var(--border))',
         input:       'hsl(var(--input))',
         ring:        'hsl(var(--ring))',
+        night:       'hsl(var(--night))',
       },
       borderRadius: {
         lg: 'var(--radius)',

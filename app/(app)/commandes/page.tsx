@@ -8,7 +8,7 @@ import { formatEuro, formatTonnage } from '@/lib/utils/price'
 import type { Role, OrderStatus } from '@/types'
 import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Commandes — Chopin' }
+export const metadata = { title: `Commandes — ${BRAND.name}` }
 
 export default async function CommandesPage() {
   const supabase = await createClient()

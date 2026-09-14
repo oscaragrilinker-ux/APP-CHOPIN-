@@ -8,8 +8,9 @@ import { ArchivesFilters } from '@/components/archives/ArchivesFilters'
 import { OrderStatusBadge } from '@/components/commandes/OrderStatusBadge'
 import { formatEuro, computeTTC } from '@/lib/utils/price'
 import type { Role, OrderStatus } from '@/types'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Archives — Chopin' }
+export const metadata = { title: `Archives — ${BRAND.name}` }
 
 const PAGE_SIZE = 25
 

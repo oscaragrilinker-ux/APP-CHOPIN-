@@ -8,8 +8,9 @@ import { CompanyDialog } from '@/components/clients/CompanyDialog'
 import { formatEuro, computeTTC } from '@/lib/utils/price'
 import { hasPermission, type PermissionOverrides } from '@/lib/permissions'
 import type { Role } from '@/types'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Clients — Chopin' }
+export const metadata = { title: `Clients — ${BRAND.name}` }
 
 type CompanyStats = {
   id: string

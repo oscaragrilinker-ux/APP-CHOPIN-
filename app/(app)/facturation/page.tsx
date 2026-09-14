@@ -7,8 +7,9 @@ import { createClient } from '@/lib/supabase/server'
 import { InvoiceStatusBadge } from '@/components/facturation/InvoiceStatusBadge'
 import { formatEuro } from '@/lib/utils/price'
 import type { Role, InvoiceStatus } from '@/types'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Facturation — Chopin' }
+export const metadata = { title: `Facturation — ${BRAND.name}` }
 export const dynamic = 'force-dynamic'
 
 const STATUS_TABS: { value: string; label: string }[] = [

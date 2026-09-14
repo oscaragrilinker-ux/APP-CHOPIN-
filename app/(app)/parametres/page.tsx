@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { Role } from '@/types'
 import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Paramètres — Chopin' }
+export const metadata = { title: `Paramètres — ${BRAND.name}` }
 
 export default async function ParametresPage() {
   const supabase = await createClient()

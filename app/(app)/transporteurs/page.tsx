@@ -5,8 +5,9 @@ import { CarrierDialog } from '@/components/transporteurs/CarrierDialog'
 import { ToggleCarrierActive } from '@/components/transporteurs/ToggleCarrierActive'
 import { hasPermission, type PermissionOverrides } from '@/lib/permissions'
 import type { Carrier, Role } from '@/types'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Transporteurs — Chopin' }
+export const metadata = { title: `Transporteurs — ${BRAND.name}` }
 export const dynamic = 'force-dynamic'
 
 export default async function TransporteursPage() {

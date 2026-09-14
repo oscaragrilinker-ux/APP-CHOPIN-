@@ -3,8 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { AtelierQueue } from '@/components/atelier/AtelierQueue'
 import { hasPermission, type PermissionOverrides } from '@/lib/permissions'
 import type { Role, OrderForConditionnement, PalletSheet } from '@/types'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Atelier — Chopin' }
+export const metadata = { title: `Atelier — ${BRAND.name}` }
 export const dynamic = 'force-dynamic'
 
 const ATELIER_VIEW_ROLES: Role[] = [

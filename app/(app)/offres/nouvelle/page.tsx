@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { OfferWizard } from '@/components/offres/OfferWizard'
 import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Nouvelle offre — Chopin' }
+export const metadata = { title: `Nouvelle offre — ${BRAND.name}` }
 
 export default async function NouvelleOffrePage({
   searchParams,

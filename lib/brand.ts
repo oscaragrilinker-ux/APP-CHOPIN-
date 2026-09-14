@@ -27,7 +27,8 @@ export const BRAND = {
 
   domain: 'fermedeschopin.fr',
   contactEmail: 'contact@fermedeschopin.fr',
-  siteUrl: 'https://fermedeschopin.fr',
+  /** Site public. NEXT_PUBLIC_SITE_URL le surcharge en développement. */
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://fermedeschopin.fr',
 
   address: {
     street: '11 rue de la Maladrerie',

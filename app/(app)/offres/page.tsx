@@ -8,7 +8,7 @@ import { formatEuro, priceBasisUnit } from '@/lib/utils/price'
 import type { Role, OfferStatus, PriceBasis } from '@/types'
 import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Négociations — Chopin' }
+export const metadata = { title: `Négociations — ${BRAND.name}` }
 
 export default async function OffresPage() {
   const supabase = await createClient()

@@ -12,6 +12,7 @@ const navLinks = [
   { href: '/histoire', label: 'Histoire' },
   { href: '/produits', label: 'Produits' },
   { href: '/contact',  label: 'Contact' },
+  { href: '/acces',    label: 'Demander un accès' },
 ]
 
 export function Header() {

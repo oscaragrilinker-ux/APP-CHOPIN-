@@ -102,6 +102,12 @@ export default function LoginPage() {
         <p className="text-center text-xs text-muted-foreground/70 mt-5">
           Accès réservé aux professionnels — {BRAND.legalName}
         </p>
+        <p className="text-center text-xs text-muted-foreground mt-2">
+          Pas encore de compte ?{' '}
+          <a href={`${BRAND.siteUrl}/acces`} className="underline underline-offset-4 hover:text-primary">
+            Demander un accès
+          </a>
+        </p>
       </div>
     </div>
   )

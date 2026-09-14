@@ -46,7 +46,7 @@ export function ProductAccordion({ product, role, allFormats, defaultOpen = fals
 
   return (
     <div
-      className={`rounded-xl border transition-shadow hover:shadow-sm
+      className={`rounded-md border transition-shadow hover:shadow-sm
         ${product.is_active ? 'border-border bg-card' : 'border-border/40 bg-muted/30'}`}
     >
       {/* En-tête produit */}

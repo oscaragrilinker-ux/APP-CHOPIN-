@@ -188,10 +188,16 @@ export default function HomePage() {
                 calibres, vos contenants et vos cadences. On vous répond avec un
                 prix, pas avec une brochure.
               </p>
-              <div>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/acces"
+                  className="inline-flex h-12 items-center bg-paper px-7 text-[11px] font-semibold uppercase tracking-label text-ink transition-colors hover:bg-paper/90"
+                >
+                  Demander un accès
+                </Link>
                 <Link
                   href="/contact"
-                  className="inline-flex h-12 items-center bg-paper px-7 text-[11px] font-semibold uppercase tracking-label text-ink transition-colors hover:bg-paper/90"
+                  className="inline-flex h-12 items-center border border-paper/40 px-7 text-[11px] font-semibold uppercase tracking-label text-paper transition-colors hover:border-paper"
                 >
                   Nous contacter
                 </Link>

@@ -6,9 +6,13 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { ChangeRoleSelect } from './ChangeRoleSelect'
 import { RevokeInviteButton } from './RevokeInviteButton'
 import { InviteDialog } from '@/components/invitations/InviteDialog'
+import { AccessRequestRow } from './AccessRequestRow'
+import type { AccessRequestRow as AccessRequest } from '@/lib/actions/access-requests'
+import { BRAND } from '@/lib/brand'
+import { invitationLink } from '@/lib/actions/invitations'
 import type { Role } from '@/types'
 
-export const metadata = { title: 'Utilisateurs — Chopin' }
+export const metadata = { title: `Utilisateurs — ${BRAND.name}` }
 export const dynamic = 'force-dynamic'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -64,6 +68,31 @@ export default async function UtilisateursPage() {
     .is('revoked_at', null)
     .order('created_at', { ascending: false })
 
+  // Demandes venues du site public : celles à décider, et celles déjà
+  // invitées dont le lien est encore vivant — l'admin doit pouvoir le copier
+  // après coup, pas seulement dans la seconde qui suit le clic.
+  const { data: rawRequests } = await service
+    .from('access_requests')
+    .select('id, email, company_name, contact_name, phone, wishes, status, created_at, invitation_id')
+    .in('status', ['pending', 'invited'])
+    .order('created_at', { ascending: false })
+
+  const invitationIds = (rawRequests ?? []).map(r => r.invitation_id as string | null).filter((x): x is string => !!x)
+  const { data: liveInvitations } = invitationIds.length
+    ? await service.from('invitations').select('id, token').in('id', invitationIds).is('accepted_at', null).is('revoked_at', null)
+    : { data: [] as { id: string; token: string }[] }
+  const tokenById = new Map((liveInvitations ?? []).map(i => [i.id as string, i.token as string]))
+
+  const accessRequests: AccessRequest[] = []
+  for (const r of rawRequests ?? []) {
+    const token = r.invitation_id ? tokenById.get(r.invitation_id as string) : undefined
+    if (r.status === 'invited' && !token) continue
+    accessRequests.push({
+      ...(r as unknown as AccessRequest),
+      invitation_link: token ? await invitationLink(token) : null,
+    })
+  }
+
   // Entreprises auxquelles rattacher un contact client invité depuis cet écran.
   const { data: companies } = await service
     .from('companies')
@@ -84,12 +113,25 @@ export default async function UtilisateursPage() {
         <InviteDialog companies={(companies ?? []) as { id: string; name: string }[]} />
       </div>
 
+      {!!accessRequests?.length && (
+        <section>
+          <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-3">
+            Demandes d&apos;accès · {accessRequests.length}
+          </p>
+          <div className="rounded-lg border border-primary/30 bg-primary/5 divide-y divide-border/60">
+            {accessRequests.map(r => (
+              <AccessRequestRow key={r.id} request={r} />
+            ))}
+          </div>
+        </section>
+      )}
+
       {!!pendingInvites?.length && (
         <section>
           <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-3">
             Invitations en attente · {pendingInvites.length}
           </p>
-          <div className="rounded-2xl border border-amber-200 bg-amber-50/40 divide-y divide-amber-200/60">
+          <div className="rounded-lg border border-amber-200 bg-amber-50/40 divide-y divide-amber-200/60">
             {pendingInvites.map(inv => {
               const name = [inv.first_name, inv.last_name].filter(Boolean).join(' ')
               return (
@@ -119,7 +161,7 @@ export default async function UtilisateursPage() {
             <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-3">
               {ROLE_LABELS[r]} · {users.length}
             </p>
-            <div className="rounded-2xl border border-border/60 overflow-hidden">
+            <div className="rounded-lg border border-border/60 overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border/60 bg-secondary/30">

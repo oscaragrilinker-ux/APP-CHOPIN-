@@ -123,15 +123,15 @@ export function Sidebar() {
   const compteItems = visible.filter(i => COMPTE_HREFS.includes(i.href))
 
   return (
-    <div className="flex flex-col h-full bg-primary overflow-hidden">
+    <div className="flex flex-col h-full bg-night overflow-hidden">
       {/* Logo */}
       <div className="shrink-0 px-6 py-5 border-b border-white/10">
         <Link href="/dashboard" className="block group">
-          <span className="font-serif text-[1.6rem] leading-none text-accent group-hover:text-accent/90 transition-colors">
-            Chopin
+          <span className="block font-serif text-[1.15rem] uppercase leading-none text-primary-foreground">
+            {BRAND.nameTop}
           </span>
-          <span className="block text-[9px] text-primary-foreground/40 tracking-[0.2em] uppercase mt-1 font-sans">
-            Conditionnement
+          <span className="block font-serif text-[1.15rem] uppercase leading-none text-primary group-hover:text-primary/80 transition-colors">
+            {BRAND.nameBottom}
           </span>
         </Link>
       </div>

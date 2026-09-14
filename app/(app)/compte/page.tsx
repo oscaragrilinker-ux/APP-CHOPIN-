@@ -2,8 +2,9 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AccountForm } from './AccountForm'
 import type { Role } from '@/types'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Mon compte — Chopin' }
+export const metadata = { title: `Mon compte — ${BRAND.name}` }
 
 export default async function ComptePage() {
   const supabase = await createClient()

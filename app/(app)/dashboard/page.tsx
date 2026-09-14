@@ -16,8 +16,9 @@ import { OrderStatusBadge } from '@/components/commandes/OrderStatusBadge'
 import { OfferStatusBadge } from '@/components/offres/OfferStatusBadge'
 import { formatEuro, computeTTC } from '@/lib/utils/price'
 import type { Role, OrderStatus, OfferStatus } from '@/types'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Tableau de bord — Chopin' }
+export const metadata = { title: `Tableau de bord — ${BRAND.name}` }
 export const dynamic = 'force-dynamic'
 
 function KpiCard({

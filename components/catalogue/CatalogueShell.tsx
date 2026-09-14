@@ -46,13 +46,13 @@ export function CatalogueShell({ products, allFormats, role }: Props) {
           </div>
 
           {visibleFormats.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border p-8 text-center">
+            <div className="rounded-md border border-dashed border-border p-8 text-center">
               <p className="text-sm text-muted-foreground">
                 Aucun format dans le parc — créez votre premier contenant.
               </p>
             </div>
           ) : (
-            <div className="rounded-xl border border-border bg-card divide-y divide-border/50">
+            <div className="rounded-md border border-border bg-card divide-y divide-border/50">
               {visibleFormats.map(format => (
                 <div key={format.id} className="px-2 first:pt-1 last:pb-1">
                   <FormatRow format={format} role={role} />
@@ -76,7 +76,7 @@ export function CatalogueShell({ products, allFormats, role }: Props) {
           </div>
 
           {activeProducts.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border p-16 text-center">
+            <div className="rounded-md border border-dashed border-border p-16 text-center">
               <p className="font-serif text-2xl text-muted-foreground mb-2">Catalogue vide</p>
               <p className="text-sm text-muted-foreground">
                 Commencez par créer un premier produit.
@@ -135,7 +135,7 @@ export function CatalogueShell({ products, allFormats, role }: Props) {
 
   if (vitrineItems.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-border/60 p-16 text-center">
+      <div className="rounded-lg border border-dashed border-border/60 p-16 text-center">
         <p className="font-serif text-2xl text-muted-foreground mb-2">
           Aucune variété disponible
         </p>

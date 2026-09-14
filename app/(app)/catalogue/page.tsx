@@ -2,8 +2,9 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { CatalogueShell } from '@/components/catalogue/CatalogueShell'
 import type { ProductWithTree, FormatFull, Role } from '@/types'
+import { BRAND } from '@/lib/brand'
 
-export const metadata = { title: 'Catalogue — Chopin' }
+export const metadata = { title: `Catalogue — ${BRAND.name}` }
 
 export default async function CataloguePage() {
   const supabase = await createClient()
