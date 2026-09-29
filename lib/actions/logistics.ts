@@ -186,3 +186,41 @@ export async function issueDeliveryNote(
   revalidatePath(`/commandes/${sheet.order_id as string}`)
   return { success: true, blNumber: generated }
 }
+
+/**
+ * Émet le bon de livraison de toute une commande : chaque fiche palette sans
+ * numéro en reçoit un, séquentiel. Idempotent — les fiches déjà numérotées
+ * sont laissées telles quelles.
+ */
+export async function issueDeliveryNotesForOrder(
+  { orderId }: { orderId: string },
+): Promise<ActionResult<{ issued: number; numbers: string[] }>> {
+  const guard = await requirePermission('pallet_sheet:create')
+  if ('error' in guard) return { error: guard.error }
+
+  const service = createServiceClient()
+  const { data: sheets } = await service
+    .from('pallet_sheets')
+    .select('id, bl_number')
+    .eq('order_id', orderId)
+    .order('prepared_at')
+  if (!sheets?.length) return { error: 'Aucune fiche palette : rien à émettre.' }
+
+  const numbers: string[] = []
+  let issued = 0
+  for (const sheet of sheets) {
+    if (sheet.bl_number) { numbers.push(sheet.bl_number as string); continue }
+    const { data: generated, error: rpcError } = await service.rpc('generate_bl_number' as never)
+    if (rpcError || typeof generated !== 'string') {
+      return { error: `Numéro indisponible après ${issued} émission(s). Les numéros déjà attribués sont conservés.` }
+    }
+    const { error } = await service
+      .from('pallet_sheets').update({ bl_number: generated }).eq('id', sheet.id).is('bl_number', null)
+    if (error) return { error: `Émission interrompue : ${error.message}` }
+    numbers.push(generated); issued += 1
+  }
+
+  revalidatePath('/atelier')
+  revalidatePath(`/commandes/${orderId}`)
+  return { success: true, issued, numbers }
+}

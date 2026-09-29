@@ -1,6 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, CheckCircle2, Package } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Package, FileDown } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { createClient } from '@/lib/supabase/server'
@@ -87,6 +87,17 @@ export default async function OffreDetailPage({ params }: { params: { id: string
           )}
         </div>
       </div>
+
+      {/* Devis PDF : la dernière position de la négociation, numérotée à la première édition */}
+      <a
+        href={`/api/pdf/devis?id=${offer.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-border bg-card text-sm text-foreground hover:bg-secondary/50 transition-colors"
+      >
+        <FileDown size={14} />
+        Télécharger le devis
+      </a>
 
       {/* Fiche récap */}
       <div className="rounded-2xl border border-border/60 bg-card divide-y divide-border/50">

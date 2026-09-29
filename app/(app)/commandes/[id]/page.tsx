@@ -9,6 +9,7 @@ import { OrderStatusBadge } from '@/components/commandes/OrderStatusBadge'
 import { OrderActions } from './OrderActions'
 import { CreateInvoiceButton } from '@/components/facturation/CreateInvoiceButton'
 import { TransportPanel } from '@/components/commandes/TransportPanel'
+import { DocumentsPanel } from '@/components/commandes/DocumentsPanel'
 import { formatEuro, formatTonnage, priceBasisLabel } from '@/lib/utils/price'
 import { hasPermission, type PermissionOverrides } from '@/lib/permissions'
 import { ATELIER_ROLES, type Role, type OrderStatus, type PriceBasis, type Carrier, type PalletSheet } from '@/types'
@@ -107,6 +108,12 @@ export default async function CommandeDetailPage({ params }: { params: { id: str
     .select('*')
     .eq('order_id', params.id)
   const pallets = (palletRows ?? []) as PalletSheet[]
+
+  // Facture existante : l'atelier ne la voit jamais (RLS), les autres ont le lien direct.
+  const { data: invoiceRow } = isConditionnement
+    ? { data: null }
+    : await supabase.from('invoices').select('id, invoice_number').eq('order_id', params.id).maybeSingle()
+  const canIssueBl = hasPermission(role, 'pallet_sheet:create', overrides)
 
   const carriers = canOrganizeTransport
     ? ((await supabase.from('carriers').select('*').eq('is_active', true).order('name')).data ?? [])
@@ -256,16 +263,16 @@ export default async function CommandeDetailPage({ params }: { params: { id: str
         />
       )}
 
-      {/* Bon de commande */}
-      <a
-        href={`/api/bon-commande/${o.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-border bg-card text-sm text-foreground hover:bg-secondary/50 transition-colors"
-      >
-        <Download size={14} />
-        Télécharger le bon de commande
-      </a>
+      {/* Documents de la commande */}
+      <DocumentsPanel
+        orderId={o.id}
+        offerId={isConditionnement ? null : ((o.offer as { id: string } | null)?.id ?? null)}
+        invoice={invoiceRow ? { id: invoiceRow.id as string, number: invoiceRow.invoice_number as string } : null}
+        sheetCount={pallets.length}
+        issuedCount={pallets.filter(p => !!p.bl_number).length}
+        atelier={isConditionnement}
+        canIssue={canIssueBl}
+      />
 
       {/* Lien offre source */}
       {!isConditionnement && (o.offer as { id: string } | null)?.id && (

@@ -4,6 +4,8 @@ import { BookOpen, Users, Settings, FileText } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { Role } from '@/types'
 import { BRAND } from '@/lib/brand'
+import { getDocumentSettings } from '@/lib/documents/settings'
+import { DocumentSettingsForm } from '@/components/parametres/DocumentSettingsForm'
 
 export const metadata = { title: `Paramètres — ${BRAND.name}` }
 
@@ -19,6 +21,8 @@ export default async function ParametresPage() {
   const role = profile.role as Role
   if (!['admin', 'super_admin'].includes(role)) redirect('/dashboard')
 
+  const documentSettings = await getDocumentSettings()
+
   // Stats générales
   const [
     { count: nbProduits },
@@ -33,7 +37,7 @@ export default async function ParametresPage() {
   ])
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-8 max-w-3xl">
       <div>
         <h1 className="font-serif text-3xl text-foreground">Paramètres</h1>
         <p className="text-sm text-muted-foreground mt-1 uppercase tracking-[0.1em]">
@@ -59,6 +63,15 @@ export default async function ParametresPage() {
           <p className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">Version application</p>
           <p className="text-sm font-mono text-muted-foreground mt-0.5">v0.1 — APP CHOPIN</p>
         </div>
+      </div>
+
+      {/* Mentions des documents — devis, factures, bons */}
+      <div>
+        <p className="text-xs uppercase tracking-[0.1em] text-muted-foreground mb-1">Mentions des documents</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Reprises sur chaque devis, facture, bon de livraison et bon de transport dès l&apos;enregistrement.
+        </p>
+        <DocumentSettingsForm initial={documentSettings} />
       </div>
 
       {/* Stats catalogue */}

@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { createClient } from '@/lib/supabase/server'
-import { OfferStatusBadge } from '@/components/offres/OfferStatusBadge'
+import { OffersTable, type OfferRow } from '@/components/offres/OffersTable'
+import Link from 'next/link'
 import { formatEuro, priceBasisUnit } from '@/lib/utils/price'
 import type { Role, OfferStatus, PriceBasis } from '@/types'
 import { BRAND } from '@/lib/brand'
@@ -35,6 +35,7 @@ export default async function OffresPage() {
       format:formats ( id, name, weight_kg ),
       offer_rounds ( unit_price, round_number )
     `)
+    .is('archived_at', null)
     .order('updated_at', { ascending: false })
 
   const { data: offers, error } = await query
@@ -86,94 +87,30 @@ export default async function OffresPage() {
           )}
         </div>
       ) : (
-        <div className="rounded-2xl border border-border/60 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border/60 bg-secondary/30">
-                {isAdmin && (
-                  <th className="text-left px-4 py-3 text-xs uppercase tracking-[0.08em] text-muted-foreground font-normal">
-                    Client
-                  </th>
-                )}
-                <th className="text-left px-4 py-3 text-xs uppercase tracking-[0.08em] text-muted-foreground font-normal">
-                  Produit
-                </th>
-                <th className="text-left px-4 py-3 text-xs uppercase tracking-[0.08em] text-muted-foreground font-normal hidden sm:table-cell">
-                  Qté
-                </th>
-                <th className="text-left px-4 py-3 text-xs uppercase tracking-[0.08em] text-muted-foreground font-normal hidden md:table-cell">
-                  Dernier prix
-                </th>
-                <th className="text-left px-4 py-3 text-xs uppercase tracking-[0.08em] text-muted-foreground font-normal">
-                  Statut
-                </th>
-                <th className="text-left px-4 py-3 text-xs uppercase tracking-[0.08em] text-muted-foreground font-normal hidden lg:table-cell">
-                  Date
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/40">
-              {sorted.map((offer) => {
-                const rounds = (offer.offer_rounds ?? []) as { unit_price: number; round_number: number }[]
-                const lastRound = rounds.sort((a, b) => b.round_number - a.round_number)[0]
-                const company = offer.company as unknown as { name: string } | null
-                const product = offer.product as unknown as { name: string } | null
-                const variety = offer.variety as unknown as { name: string } | null
-                const fmt = offer.format as unknown as { name: string; weight_kg: number | null } | null
-
-                const needsAction = isAdmin
-                  ? offer.status === 'pending'
-                  : offer.status === 'counter_proposed'
-
-                return (
-                  <Link key={offer.id} href={`/offres/${offer.id}`} legacyBehavior>
-                    <tr
-                      className={`hover:bg-secondary/40 cursor-pointer transition-colors ${
-                        needsAction ? 'bg-amber-50/40' : ''
-                      }`}
-                    >
-                      {isAdmin && (
-                        <td className="px-4 py-3 text-foreground font-medium">
-                          {company?.name ?? '—'}
-                          {needsAction && (
-                            <span className="ml-2 inline-flex h-1.5 w-1.5 rounded-full bg-amber-500" />
-                          )}
-                        </td>
-                      )}
-                      <td className="px-4 py-3">
-                        <p className="font-medium text-foreground">{product?.name ?? '—'}</p>
-                        {variety && (
-                          <p className="text-xs text-muted-foreground">{variety.name} · {fmt?.name ?? '—'}</p>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">
-                        {offer.quantity}
-                      </td>
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        {lastRound ? (
-                          <span className="text-foreground">
-                            {formatEuro(lastRound.unit_price)}
-                            <span className="text-muted-foreground text-xs ml-1">
-                              {priceBasisUnit(offer.price_basis as PriceBasis)}
-                            </span>
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <OfferStatusBadge status={offer.status as OfferStatus} />
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
-                        {format(new Date(offer.created_at), 'd MMM yyyy', { locale: fr })}
-                      </td>
-                    </tr>
-                  </Link>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        <OffersTable
+          staff={isAdmin}
+          rows={sorted.map((offer): OfferRow => {
+            const rounds = (offer.offer_rounds ?? []) as { unit_price: number; round_number: number }[]
+            const lastRound = [...rounds].sort((a, b) => b.round_number - a.round_number)[0]
+            const company = offer.company as unknown as { name: string } | null
+            const product = offer.product as unknown as { name: string } | null
+            const variety = offer.variety as unknown as { name: string } | null
+            const fmt = offer.format as unknown as { name: string } | null
+            return {
+              id: offer.id,
+              companyName: company?.name ?? null,
+              productName: product?.name ?? '—',
+              varietyName: variety?.name ?? null,
+              formatName: fmt?.name ?? null,
+              quantity: offer.quantity,
+              lastPrice: lastRound ? formatEuro(lastRound.unit_price) : null,
+              basisUnit: priceBasisUnit(offer.price_basis as PriceBasis),
+              status: offer.status as OfferStatus,
+              createdAt: format(new Date(offer.created_at), 'd MMM yyyy', { locale: fr }),
+              needsAction: isAdmin ? offer.status === 'pending' : offer.status === 'counter_proposed',
+            }
+          })}
+        />
       )}
     </div>
   )

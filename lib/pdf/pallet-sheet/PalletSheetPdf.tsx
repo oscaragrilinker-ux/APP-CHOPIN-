@@ -1,8 +1,12 @@
 import React from 'react'
-import { Document, Page, StyleSheet, Text, View, Image } from '@react-pdf/renderer'
-import { BRAND } from '@/lib/brand'
+import { StyleSheet, Text, View, Image } from '@react-pdf/renderer'
+import type { DocumentSettings } from '@/lib/documents/settings'
+import {
+  PdfDoc, Letterhead, SectionTitle, KV, NoteBox, SignatureRow, LegalFooter, S, T, fmt,
+} from '@/lib/pdf/kit'
 
 export type PalletSheetPdfProps = {
+  settings: DocumentSettings
   blNumber: string | null
   lotNumber: string
   lotDate: string          // YYYY-MM-DD
@@ -25,210 +29,83 @@ export type PalletSheetPdfProps = {
   qrDataUri: string | null
 }
 
-// Charte Chopin. Les variables CSS n'existent pas côté PDF : valeurs en dur.
-const FOREST = '#1F3D2B'
-const GOLD = '#B8975A'
-const INK = '#1A1A1A'
-const MUTED = '#6B6B6B'
-const RULE = '#DDD6C6'
-const CREAM = '#F5F1E8'
-
-const s = StyleSheet.create({
-  page: { padding: 34, fontSize: 10, color: INK, fontFamily: 'Helvetica' },
-
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  brand: { fontSize: 22, color: FOREST },
-  brandSub: { fontSize: 7, color: MUTED, letterSpacing: 2, marginTop: 2 },
-  docTitle: { fontSize: 15, color: FOREST, textAlign: 'right' },
-  docRef: { fontSize: 9, color: MUTED, textAlign: 'right', marginTop: 3 },
-
-  rule: { borderBottomWidth: 2, borderBottomColor: GOLD, marginTop: 12, marginBottom: 16 },
-
-  // Le lot est l'information qu'un cariste doit lire à distance.
+// Le lot est l'information qu'un cariste doit lire à distance : plus grand
+// que tout le reste, avec son QR à côté.
+const local = StyleSheet.create({
   lotBand: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: CREAM, borderWidth: 1, borderColor: RULE,
-    borderRadius: 5, padding: 14, marginBottom: 16,
+    backgroundColor: T.soft, borderWidth: 1, borderColor: T.bone,
+    borderRadius: 4, padding: 14, marginBottom: 18,
   },
-  lotLabel: { fontSize: 7, color: MUTED, letterSpacing: 1.5, marginBottom: 4 },
-  lotValue: { fontSize: 26, color: FOREST, fontFamily: 'Helvetica-Bold' },
-  lotDate: { fontSize: 9, color: MUTED, marginTop: 4 },
-  qr: { width: 78, height: 78 },
-
-  sectionTitle: {
-    fontSize: 7, color: MUTED, letterSpacing: 1.5,
-    marginBottom: 6, marginTop: 4,
-  },
-
-  grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  cell: { width: '50%', paddingVertical: 6, paddingRight: 10 },
-  cellThird: { width: '33.33%', paddingVertical: 6, paddingRight: 10 },
-  label: { fontSize: 7, color: MUTED, letterSpacing: 0.8, marginBottom: 2 },
-  value: { fontSize: 11, color: INK },
-  valueStrong: { fontSize: 13, color: FOREST, fontFamily: 'Helvetica-Bold' },
-
-  block: {
-    borderWidth: 1, borderColor: RULE, borderRadius: 5,
-    padding: 12, marginBottom: 12,
-  },
-
-  notes: {
-    backgroundColor: CREAM, borderLeftWidth: 2, borderLeftColor: GOLD,
-    padding: 10, marginTop: 4,
-  },
-
-  signRow: { flexDirection: 'row', marginTop: 22 },
-  signBox: { flex: 1, marginRight: 12 },
-  signLine: { borderBottomWidth: 1, borderBottomColor: RULE, height: 34 },
-
-  footer: {
-    position: 'absolute', bottom: 26, left: 34, right: 34,
-    borderTopWidth: 1, borderTopColor: RULE, paddingTop: 8,
-    flexDirection: 'row', justifyContent: 'space-between',
-  },
-  footerText: { fontSize: 7, color: MUTED },
+  lotLabel: { fontSize: 6.5, color: T.soil, letterSpacing: 1.6, marginBottom: 4, fontFamily: 'Helvetica-Bold' },
+  lotValue: { fontSize: 27, color: T.ink, fontFamily: 'Helvetica-Bold' },
+  lotDate: { fontSize: 8.5, color: T.muted, marginTop: 4 },
+  qr: { width: 80, height: 80 },
 })
 
-function frDate(iso: string | null) {
-  if (!iso) return '—'
-  const [y, m, d] = iso.slice(0, 10).split('-')
-  return `${d}/${m}/${y}`
-}
-
-export function PalletSheetPdf(props: PalletSheetPdfProps) {
-  const {
-    blNumber, lotNumber, lotDate, companyName, productName, varietyName,
-    palletCount, palletKindLabel, packagingType, parcelCount, strappingLabel,
-    netWeightKg, operatorName, preparedAt, deliveryDate, deliveryLocation,
-    carrierName, notes, qrDataUri,
-  } = props
-
+export function PalletSheetPdf(p: PalletSheetPdfProps) {
   return (
-    <Document title={`Fiche palette ${lotNumber}`}>
-      <Page size="A4" style={s.page}>
-        <View style={s.header}>
-          <View>
-            <Text style={s.brand}>Chopin</Text>
-            <Text style={s.brandSub}>CONDITIONNEMENT</Text>
-          </View>
-          <View>
-            <Text style={s.docTitle}>Fiche palette</Text>
-            {blNumber && <Text style={s.docRef}>Bon de livraison {blNumber}</Text>}
-            <Text style={s.docRef}>Éditée le {frDate(new Date().toISOString())}</Text>
-          </View>
+    <PdfDoc title={`Fiche palette ${p.lotNumber}`}>
+      <Letterhead
+        settings={p.settings}
+        title="Fiche palette"
+        number={p.blNumber ?? 'BL à émettre'}
+        meta={[`Éditée le ${fmt.date(new Date())}`]}
+      />
+
+      <View style={local.lotBand}>
+        <View>
+          <Text style={local.lotLabel}>NUMÉRO DE LOT</Text>
+          <Text style={local.lotValue}>{p.lotNumber}</Text>
+          <Text style={local.lotDate}>Lot du {fmt.dateShort(p.lotDate)}</Text>
         </View>
+        {p.qrDataUri && <Image src={p.qrDataUri} style={local.qr} />}
+      </View>
 
-        <View style={s.rule} />
+      <View style={S.section}>
+        <SectionTitle>Marchandise</SectionTitle>
+        <KV cols={2} items={[
+          { label: 'Produit', value: p.productName },
+          { label: 'Variété', value: p.varietyName ?? '—' },
+          { label: 'Client', value: p.companyName },
+          { label: 'Conditionnement', value: p.packagingType ?? '—' },
+        ]} />
+      </View>
 
-        <View style={s.lotBand}>
-          <View>
-            <Text style={s.lotLabel}>NUMÉRO DE LOT</Text>
-            <Text style={s.lotValue}>{lotNumber}</Text>
-            <Text style={s.lotDate}>Lot du {frDate(lotDate)}</Text>
-          </View>
-          {qrDataUri && <Image src={qrDataUri} style={s.qr} />}
+      <View style={S.section}>
+        <SectionTitle>Palettisation</SectionTitle>
+        <KV cols={3} items={[
+          { label: 'Nombre de palettes', value: fmt.num(p.palletCount), big: true },
+          { label: 'Nombre de colis', value: p.parcelCount != null ? fmt.num(p.parcelCount) : '—', big: true },
+          { label: 'Poids net', value: p.netWeightKg != null ? `${fmt.num(p.netWeightKg)} kg` : '—', big: true },
+          { label: 'Type de palette', value: p.palletKindLabel },
+          { label: 'Cerclage', value: p.strappingLabel },
+        ]} />
+      </View>
+
+      <View style={S.section}>
+        <SectionTitle>Expédition</SectionTitle>
+        <KV cols={3} items={[
+          { label: 'Date de livraison', value: fmt.dateShort(p.deliveryDate) },
+          { label: 'Transporteur', value: p.carrierName ?? '—' },
+          { label: 'Destination', value: p.deliveryLocation ?? '—' },
+        ]} />
+      </View>
+
+      {p.notes && (
+        <View style={S.section}>
+          <NoteBox title="Observations" text={p.notes} />
         </View>
+      )}
 
-        <Text style={s.sectionTitle}>MARCHANDISE</Text>
-        <View style={s.block}>
-          <View style={s.grid}>
-            <View style={s.cell}>
-              <Text style={s.label}>PRODUIT</Text>
-              <Text style={s.valueStrong}>{productName}</Text>
-            </View>
-            <View style={s.cell}>
-              <Text style={s.label}>VARIÉTÉ</Text>
-              <Text style={s.valueStrong}>{varietyName ?? '—'}</Text>
-            </View>
-            <View style={s.cell}>
-              <Text style={s.label}>CLIENT</Text>
-              <Text style={s.value}>{companyName}</Text>
-            </View>
-            <View style={s.cell}>
-              <Text style={s.label}>CONDITIONNEMENT</Text>
-              <Text style={s.value}>{packagingType ?? '—'}</Text>
-            </View>
-          </View>
-        </View>
+      <View style={S.section}>
+        <KV cols={3} items={[
+          { label: 'Préparé par', value: `${p.operatorName ?? '—'} · le ${fmt.dateShort(p.preparedAt.slice(0, 10))}` },
+        ]} />
+      </View>
+      <SignatureRow labels={['Contrôlé par', 'Réceptionné par']} />
 
-        <Text style={s.sectionTitle}>PALETTISATION</Text>
-        <View style={s.block}>
-          <View style={s.grid}>
-            <View style={s.cellThird}>
-              <Text style={s.label}>NOMBRE DE PALETTES</Text>
-              <Text style={s.valueStrong}>{palletCount}</Text>
-            </View>
-            <View style={s.cellThird}>
-              <Text style={s.label}>NOMBRE DE COLIS</Text>
-              <Text style={s.valueStrong}>{parcelCount ?? '—'}</Text>
-            </View>
-            <View style={s.cellThird}>
-              <Text style={s.label}>POIDS NET</Text>
-              <Text style={s.valueStrong}>
-                {netWeightKg != null ? `${netWeightKg.toLocaleString('fr-FR')} kg` : '—'}
-              </Text>
-            </View>
-            <View style={s.cell}>
-              <Text style={s.label}>TYPE DE PALETTE</Text>
-              <Text style={s.value}>{palletKindLabel}</Text>
-            </View>
-            <View style={s.cell}>
-              <Text style={s.label}>CERCLAGE</Text>
-              <Text style={s.value}>{strappingLabel}</Text>
-            </View>
-          </View>
-        </View>
-
-        <Text style={s.sectionTitle}>EXPÉDITION</Text>
-        <View style={s.block}>
-          <View style={s.grid}>
-            <View style={s.cellThird}>
-              <Text style={s.label}>DATE DE LIVRAISON</Text>
-              <Text style={s.value}>{frDate(deliveryDate)}</Text>
-            </View>
-            <View style={s.cellThird}>
-              <Text style={s.label}>TRANSPORTEUR</Text>
-              <Text style={s.value}>{carrierName ?? '—'}</Text>
-            </View>
-            <View style={s.cellThird}>
-              <Text style={s.label}>DESTINATION</Text>
-              <Text style={s.value}>{deliveryLocation ?? '—'}</Text>
-            </View>
-          </View>
-        </View>
-
-        {notes && (
-          <View style={s.notes}>
-            <Text style={s.label}>OBSERVATIONS</Text>
-            <Text style={s.value}>{notes}</Text>
-          </View>
-        )}
-
-        <View style={s.signRow}>
-          <View style={s.signBox}>
-            <Text style={s.label}>PRÉPARÉ PAR</Text>
-            <Text style={[s.value, { marginBottom: 4 }]}>{operatorName ?? '—'}</Text>
-            <Text style={[s.label, { marginTop: 2 }]}>
-              Le {frDate(preparedAt.slice(0, 10))}
-            </Text>
-          </View>
-          <View style={s.signBox}>
-            <Text style={s.label}>CONTRÔLÉ PAR</Text>
-            <View style={s.signLine} />
-          </View>
-          <View style={s.signBox}>
-            <Text style={s.label}>RÉCEPTIONNÉ PAR</Text>
-            <View style={s.signLine} />
-          </View>
-        </View>
-
-        <View style={s.footer} fixed>
-          <Text style={s.footerText}>{BRAND.legalName}</Text>
-          <Text style={s.footerText}>
-            Lot {lotNumber}{blNumber ? ` · ${blNumber}` : ''}
-          </Text>
-        </View>
-      </Page>
-    </Document>
+      <LegalFooter settings={p.settings} extra={`Lot ${p.lotNumber}${p.blNumber ? ` · ${p.blNumber}` : ''}`} />
+    </PdfDoc>
   )
 }

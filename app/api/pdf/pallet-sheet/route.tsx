@@ -1,10 +1,10 @@
 import React from 'react'
 import { type NextRequest } from 'next/server'
-import { renderToStream } from '@react-pdf/renderer'
-import { Readable } from 'stream'
 import QRCode from 'qrcode'
 import { createClient } from '@/lib/supabase/server'
 import { PalletSheetPdf } from '@/lib/pdf/pallet-sheet/PalletSheetPdf'
+import { getDocumentSettings } from '@/lib/documents/settings'
+import { pdfResponse } from '@/lib/pdf/respond'
 import {
   ATELIER_ROLES, PALLET_KIND_LABELS, STRAPPING_LABELS,
   type PalletKind, type Role, type StrappingKind,
@@ -71,8 +71,14 @@ export async function GET(req: NextRequest) {
     color: { dark: '#1F3D2BFF', light: '#FFFFFFFF' },
   }).catch(() => null)
 
-  const stream = await renderToStream(
+  const settings = await getDocumentSettings()
+  const filename = sheet.bl_number
+    ? `fiche-palette-${sheet.bl_number}.pdf`
+    : `fiche-palette-${sheet.lot_number}.pdf`
+
+  return pdfResponse(
     <PalletSheetPdf
+      settings={settings}
       blNumber={(sheet.bl_number as string | null) ?? null}
       lotNumber={sheet.lot_number as string}
       lotDate={sheet.lot_date as string}
@@ -93,17 +99,6 @@ export async function GET(req: NextRequest) {
       notes={(sheet.notes as string | null) ?? null}
       qrDataUri={qrDataUri}
     />,
+    filename,
   )
-
-  const filename = sheet.bl_number
-    ? `fiche-palette-${sheet.bl_number}.pdf`
-    : `fiche-palette-${sheet.lot_number}.pdf`
-
-  return new Response(Readable.toWeb(stream as unknown as Readable) as ReadableStream, {
-    headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `inline; filename="${filename}"`,
-      'Cache-Control': 'no-store',
-    },
-  })
 }

@@ -12,12 +12,21 @@ Gestion des offres commerciales, commandes, préparation palette, facturation et
 - **Tables** : @tanstack/react-table
 - **Toasts** : sonner
 - **Emails et SMS** : Brevo (API REST, sans SDK) + React Email, templates dans `/emails/`, wrapper `lib/email/send.ts` — `sendEmail()` et `sendSms()`. Sans `BREVO_API_KEY`, rien ne part et l'invitation reste transmissible par son lien
-- **PDF** : @react-pdf/renderer côté serveur
-  - Bons de commande → stream direct (`/api/bon-commande/[orderId]`), version
-    sans prix pour l'atelier
-  - Fiches palette → stream direct (`/api/pdf/pallet-sheet?id=`), QR code du
-    numéro de lot généré par `qrcode`
-  - Factures → upload Supabase Storage bucket `invoices` + URL signée *(à faire)*
+- **PDF** : @react-pdf/renderer côté serveur, socle commun `lib/pdf/kit.tsx`
+  (charte kraft, en-tête, blocs émetteur/destinataire, tableau, totaux, pied
+  légal). Chaque document se régénère à la demande depuis la base, rien n'est
+  stocké. Les mentions (raison sociale, SIRET, TVA, IBAN, conditions) viennent
+  de `document_settings` (migration 00022), modifiables dans Paramètres.
+  - Bon de commande → `/api/bon-commande/[orderId]`, sans prix pour l'atelier
+  - Devis → `/api/pdf/devis?id=` — numéro DEV-AAAA-NNNN attribué à la
+    première édition (`generate_quote_number`)
+  - Facture → `/api/pdf/invoice?id=` (RLS : un client ne voit que les siennes)
+  - Bon de livraison → `/api/pdf/bon-livraison?order=` — « provisoire » tant
+    que les numéros BL ne sont pas émis (`issueDeliveryNotesForOrder`)
+  - Bon de transport → `/api/pdf/transport?order=`, réservé à l'exploitation
+  - Fiche palette → `/api/pdf/pallet-sheet?id=`, QR du numéro de lot
+  - Les montants passent par `fmt.euro` du kit : Helvetica n'a pas l'espace
+    fine insécable de `toLocaleString('fr-FR')`, qui s'affichait « 1/125,00 »
 - **Tests E2E** : Playwright
 - **Déploiement** : Coolify
 
@@ -93,6 +102,11 @@ supabase/           → migrations SQL, seed et tests RLS
 Les pages métier vivent sous `app/(app)/` : `dashboard`, `offres`, `commandes`,
 `atelier`, `catalogue`, `clients`, `transporteurs`, `facturation`, `relances`,
 `archives`, `utilisateurs`, `parametres`, `compte`.
+
+**Archives** : une offre archivée (`offers.archived_at`, action
+`archiveOffers`) quitte la liste des négociations et se retrouve dans
+`/archives`, classée par client puis par mois ; rien n'est supprimé, et
+`unarchiveOffers` la remet en jeu.
 
 ### Règles de code
 

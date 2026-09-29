@@ -2,7 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { ArrowLeft, Package } from 'lucide-react'
+import { ArrowLeft, Package, FileDown } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { InvoiceStatusBadge } from '@/components/facturation/InvoiceStatusBadge'
 import { RecordPaymentForm } from '@/components/facturation/RecordPaymentForm'
@@ -96,6 +96,16 @@ export default async function FactureDetailPage({ params }: { params: { id: stri
           )}
         </div>
       </div>
+
+      <a
+        href={`/api/pdf/invoice?id=${invoice.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-primary text-primary-foreground text-sm hover:bg-primary/90 transition-colors"
+      >
+        <FileDown size={14} />
+        Télécharger la facture {invoice.invoice_number}
+      </a>
 
       {/* Récap commande */}
       {order && (

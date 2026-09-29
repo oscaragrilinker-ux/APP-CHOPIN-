@@ -5,6 +5,8 @@ import { fr } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, Download, FileText } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { ArchivesFilters } from '@/components/archives/ArchivesFilters'
+import { ArchivedOffers, type ArchivedGroup, type ArchivedOffer } from '@/components/archives/ArchivedOffers'
+import type { OfferStatus } from '@/types'
 import { OrderStatusBadge } from '@/components/commandes/OrderStatusBadge'
 import { formatEuro, computeTTC } from '@/lib/utils/price'
 import type { Role, OrderStatus } from '@/types'
@@ -65,10 +67,51 @@ export default async function ArchivesPage({
   if (dateFrom)  ordersQuery = ordersQuery.gte('created_at', dateFrom)
   if (dateTo)    ordersQuery = ordersQuery.lte('created_at', dateTo + 'T23:59:59Z')
 
-  const [{ data: rawOrders }, { data: companies }] = await Promise.all([
+  const [{ data: rawOrders }, { data: companies }, { data: archivedRaw }] = await Promise.all([
     ordersQuery,
     supabase.from('companies').select('id, name').order('name'),
+    supabase
+      .from('offers')
+      .select(`id, status, quantity, created_at, archived_at, quote_number, company_id,
+               company:companies ( id, name ), product:products ( name ), variety:varieties ( name ),
+               format:formats ( name ), offer_rounds ( unit_price, round_number )`)
+      .not('archived_at', 'is', null)
+      .order('archived_at', { ascending: false }),
   ])
+
+  // ── Offres archivées : par client, puis par mois (récent en premier) ────────
+  const byCompany = new Map<string, ArchivedGroup>()
+  for (const o of archivedRaw ?? []) {
+    const company = o.company as unknown as { id: string; name: string } | null
+    const key = company?.name ?? 'Sans client'
+    const rounds = (o.offer_rounds ?? []) as { unit_price: number; round_number: number }[]
+    const last = [...rounds].sort((a, b) => b.round_number - a.round_number)[0]
+    const created = new Date(o.created_at)
+    const month = format(created, 'MMMM yyyy', { locale: fr })
+    const row: ArchivedOffer = {
+      id: o.id,
+      productName: (o.product as unknown as { name: string } | null)?.name ?? '—',
+      varietyName: (o.variety as unknown as { name: string } | null)?.name ?? null,
+      formatName: (o.format as unknown as { name: string } | null)?.name ?? null,
+      quantity: o.quantity,
+      lastPrice: last ? formatEuro(last.unit_price) : null,
+      status: o.status as OfferStatus,
+      quoteNumber: (o.quote_number as string | null) ?? null,
+      createdAtIso: o.created_at,
+      createdAtLabel: format(created, 'd MMM yyyy', { locale: fr }),
+      archivedAtLabel: format(new Date(o.archived_at as string), 'd MMM yyyy', { locale: fr }),
+    }
+    const group = byCompany.get(key) ?? { companyId: company?.id ?? null, companyName: key, months: [], total: 0 }
+    let m = group.months.find(x => x.label === month)
+    if (!m) { m = { label: month, offers: [] }; group.months.push(m) }
+    m.offers.push(row); group.total += 1
+    byCompany.set(key, group)
+  }
+  const archivedGroups = Array.from(byCompany.values()).sort((a, b) => a.companyName.localeCompare(b.companyName, 'fr'))
+  for (const g of archivedGroups) {
+    for (const m of g.months) m.offers.sort((a, b) => b.createdAtIso.localeCompare(a.createdAtIso))
+    g.months.sort((a, b) => (b.offers[0]?.createdAtIso ?? '').localeCompare(a.offers[0]?.createdAtIso ?? ''))
+  }
 
   // ── Filtre texte côté serveur JS ──────────────────────────────────────────
   const filtered = (rawOrders ?? []).filter(o => {
@@ -104,9 +147,21 @@ export default async function ArchivesPage({
       <div>
         <h1 className="font-serif text-3xl text-foreground">Archives</h1>
         <p className="text-sm text-muted-foreground mt-1 uppercase tracking-[0.1em]">
-          Commandes terminées · Recherche transversale tous clients
+          Offres archivées par client · Commandes terminées
         </p>
       </div>
+
+      <section className="space-y-3">
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-serif text-xl text-foreground">Offres archivées</h2>
+          <span className="text-xs text-muted-foreground">
+            {archivedGroups.reduce((n, g) => n + g.total, 0)} offre{archivedGroups.reduce((n, g) => n + g.total, 0) > 1 ? 's' : ''} · {archivedGroups.length} client{archivedGroups.length > 1 ? 's' : ''}
+          </span>
+        </div>
+        <ArchivedOffers groups={archivedGroups} />
+      </section>
+
+      <h2 className="font-serif text-xl text-foreground pt-4">Commandes terminées</h2>
 
       <ArchivesFilters
         companies={(companies ?? []) as { id: string; name: string }[]}
@@ -186,7 +241,6 @@ export default async function ArchivesPage({
                           <Link
                             href={`/clients/${company.id}`}
                             className="font-medium text-foreground hover:text-primary transition-colors"
-                            onClick={e => e.stopPropagation()}
                           >
                             {company.name}
                           </Link>
