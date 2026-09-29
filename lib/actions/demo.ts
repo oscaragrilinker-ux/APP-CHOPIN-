@@ -35,7 +35,15 @@ export async function getDemoSwitchToken(email: string): Promise<SwitchResult> {
     email: account.email,
   })
   if (error || !data?.properties?.hashed_token) {
-    return { error: error?.message ?? 'Impossible de générer le lien de connexion.' }
+    // Journal structuré : la cause exacte doit remonter dans app.log, sinon un
+    // échec en démonstration est impossible à diagnostiquer après coup.
+    console.error('[demo-switch] generateLink a échoué', {
+      email: account.email,
+      status: error?.status,
+      code: error?.code,
+      message: error?.message,
+    })
+    return { error: error ? `${error.message}${error.code ? ` (${error.code})` : ''}` : 'Lien de connexion vide.' }
   }
   return { tokenHash: data.properties.hashed_token }
 }

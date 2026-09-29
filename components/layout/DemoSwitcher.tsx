@@ -38,13 +38,19 @@ export function DemoSwitcher() {
         return
       }
       const supabase = createClient()
-      await supabase.auth.signOut({ scope: 'local' })
-      const { error } = await supabase.auth.verifyOtp({
+      // La déconnexion locale peut échouer si la session est déjà périmée :
+      // ce n'est pas bloquant, verifyOtp remplace la session de toute façon.
+      await supabase.auth.signOut({ scope: 'local' }).catch(() => undefined)
+      const { data, error } = await supabase.auth.verifyOtp({
         token_hash: result.tokenHash,
         type: 'magiclink',
       })
-      if (error) {
-        toast.error('Session refusée', { description: error.message })
+      if (error || !data.session) {
+        console.error('[demo-switch] verifyOtp', error)
+        toast.error('Session refusée par Supabase', {
+          description: error ? `${error.message}${error.code ? ` (${error.code})` : ''}` : 'Aucune session retournée.',
+          duration: 15000,
+        })
         setTarget(null)
         return
       }
