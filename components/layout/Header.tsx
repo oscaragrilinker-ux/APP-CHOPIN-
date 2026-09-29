@@ -11,6 +11,7 @@ import {
 import { Sidebar } from './Sidebar'
 import { NotificationBell } from './NotificationBell'
 import { UserMenu } from './UserMenu'
+import { DemoSwitcher } from './DemoSwitcher'
 import { BRAND } from '@/lib/brand'
 
 const PAGE_TITLES: Record<string, string> = {
@@ -64,7 +65,9 @@ export function Header() {
       </h1>
 
       {/* Actions droite */}
-      <div className="flex items-center gap-0.5">
+      <div className="flex items-center gap-1.5">
+        {/* Bascule de compte pour les démonstrations — jamais en production. */}
+        {process.env.NODE_ENV !== 'production' && <DemoSwitcher />}
         <NotificationBell />
         <UserMenu />
       </div>
