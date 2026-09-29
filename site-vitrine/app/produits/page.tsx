@@ -8,7 +8,7 @@ import { siteConfig } from '@/site.config'
 export const metadata: Metadata = {
   title: 'Nos produits',
   description:
-    'Pommes de terre, oignons et échalotes triés et calibrés dans les Hauts-de-France. Caisses 2,5 kg, sacs 5 kg, big bags 25 kg.',
+    'Pommes de terre et oignons triés et calibrés dans les Hauts-de-France. Caisses 2,5 kg, sacs 5 kg, big bags 25 kg.',
 }
 
 export default function ProduitsPage() {

@@ -25,14 +25,13 @@ export const siteConfig = {
   figures: [
     { value: 1972, label: "l'année du premier chicon", suffix: "" },
     { value: 3,    label: "générations aux commandes", suffix: "" },
-    { value: 3,    label: "produits, travaillés en propre", suffix: "" },
+    { value: 2,    label: "produits, travaillés en propre", suffix: "" },
   ],
 
   // ← À COMPLÉTER : certifications réellement détenues.
   certifications: [] as readonly { name: string; detail: string }[],
 
-  // Produits travaillés. L'échalote est ajoutée d'après les photos fournies.
-  // ← À CONFIRMER : s'agit-il bien d'une production de la maison ?
+  // Produits travaillés. Pas d'échalote pour l'instant (confirmé par l'exploitation).
   products: [
     {
       slug: 'pommes-de-terre',
@@ -55,17 +54,6 @@ export const siteConfig = {
         "Jaunes et rouges, fermes et réguliers, conditionnés au plus près de la récolte.",
       varieties: ['Jaune', 'Rouge'],
       formats: ['Caisse 2,5 kg', 'Sac 5 kg', 'Big bag 25 kg'],
-    },
-    {
-      slug: 'echalotes',
-      name: 'Échalotes',
-      photo: '/images/photos/echalotes.jpg',
-      alt: "Gros plan d'échalotes",
-      brief: "Gros plan d'échalotes, cadrage carré",
-      lead:
-        "Calibrées et triées sur la même ligne, avec la même exigence de régularité.",
-      varieties: ['Longue', 'Demi-longue'],
-      formats: ['Caisse 2,5 kg', 'Sac 5 kg'],
     },
   ] as const,
 } as const
