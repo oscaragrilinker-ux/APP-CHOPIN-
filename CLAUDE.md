@@ -27,7 +27,7 @@ Gestion des offres commerciales, commandes, préparation palette, facturation et
 |------|-------------|
 | `admin` | Accès complet à toutes les fonctions métier |
 | `secretaire` | Commandes, transport, facturation, relances. Lecture seule sur les offres, ne pilote pas la préparation |
-| `responsable_conditionnement` | Chef d'atelier : tout ce que fait un opérateur, plus l'ordre de passage des commandes. Sans les prix |
+| `responsable_conditionnement` | Chef d'atelier : tout ce que fait un opérateur, plus l'ordre de passage des commandes. Sans les prix. Compte de test : `antoine.atelier@chopin-test.fr` |
 | `conditionnement` | Préparation et fiches palette (sans les prix), saisie du lot |
 | `client_pro` | Ses propres offres/commandes/factures uniquement |
 | `super_admin` | DEV only — mêmes droits qu'admin + `activity_log` + impersonation. **Masqué côté UI.** |

@@ -56,12 +56,13 @@ export function DemoSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex items-center gap-1.5 rounded-md border border-dashed border-accent/60 px-2 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-accent hover:bg-secondary transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-10 items-center gap-2 rounded-md bg-accent px-3.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-accent-foreground shadow-sm hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="Changer de profil de démonstration"
           disabled={pending}
         >
-          {pending ? <Loader2 size={13} className="animate-spin" /> : <UserRoundCog size={13} />}
-          Démo
+          {pending ? <Loader2 size={14} className="animate-spin" /> : <UserRoundCog size={14} />}
+          <span className="hidden sm:inline">Changer de profil</span>
+          <span className="sm:hidden">Démo</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
